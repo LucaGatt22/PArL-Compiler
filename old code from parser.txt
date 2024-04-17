@@ -1,0 +1,84 @@
+class Parser:
+    def ParseLiteral(self):
+        node = ParseBool()
+        if node != None: return node
+        node = ParseInt()
+        if node != None: return node
+        node = ParseFloat()
+        if node != None: return node
+        node = ParseColour()
+        if node != None: return node
+        node = ParsePadWidth()
+        if node != None: return node
+        node = ParsePadHeight()
+        if node != None: return node
+        node = ParsePadRead()
+        return node
+
+    def ParseFactor(self):
+        node = ParseLiteral()
+        if node != None: return node
+        node = ParseIdentifier()
+        if node != None: return node
+        node = ParseSubExpr()
+        if node != None: return node
+        node = ParseUnary()
+        if node != None: return node
+        node = ParsePadRandI()
+        if node != None: return node
+        node = ParsePadWidth()
+        if node != None: return node
+        node = ParsePadHeight()
+        if node != None: return node
+        node = ParsePadRead()
+        return node
+
+    def ParseStatement(self):
+##        #At the moment we only have assignment statements .... you'll need to add more for the assignment - branching depends on the token type
+##        return self.ParseAssignment()
+
+        node = ParseNodeAndSemicolon(ParseVariableDecl)
+        if node != None: return node
+        node = ParseNodeAndSemicolon(ParseAssignment)
+        if node != None: return node
+        node = ParseNodeAndSemicolon(ParsePrintStatement)
+        if node != None: return node
+        node = ParseNodeAndSemicolon(ParseDelayStatement)
+        if node != None: return node
+        node = ParseNodeAndSemicolon(ParseWriteStatement)
+        if node != None: return node
+        node = ParseIfStatement()
+        if node != None: return node
+        node = ParseForStatement()
+        if node != None: return node
+        node = ParseWhileStatement()
+        if node != None: return node
+        node = ParseNodeAndSemicolon(ParseRtrnStatement)
+        if node != None: return node
+        node = ParseFunctionDecl()
+        if node != None: return node
+        node = ParseBlock()
+        if node != None: return node
+
+
+    def ParseBlock(self):
+        #At the moment we only have assignment statements .... you'll need to add more for the assignment - branching depends on the token type
+        
+        block = ast.ASTBlockNode()
+
+        while (self.crtToken.type != lex.TokenType.end):
+            #print("New Statement - Processing Initial Token:: ", self.crtToken.type, self.crtToken.lexeme)
+            s = self.ParseStatement()
+            block.add_statement(s)
+            if (self.crtToken.type == lex.TokenType.semicolon):
+                self.NextToken()
+            else:
+                print("Syntax Error - No Semicolon separating statements in block")
+                break
+        
+        return block
+
+    def ParseProgram(self):                        
+        self.NextToken()  #set crtToken to the first token (skip all WS)
+        b = self.ParseBlock()
+        return b

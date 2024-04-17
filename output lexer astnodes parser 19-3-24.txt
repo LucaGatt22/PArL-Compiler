@@ -1,0 +1,775 @@
+Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license()" for more information.
+
+=============== RESTART: C:\Users\lucag\Downloads\parserblock.py ===============
+[1, 1, 4, 2, 3, 5, 6, 7, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+INPUT::      x=   23 ; y=  100;  z = 23 ;
+ New Block => 
+	 Assignment node => 
+		 Variable =>  x
+		 Integer value:: 23
+	 Assignment node => 
+		 Variable =>  y
+		 Integer value:: 100
+	 Assignment node => 
+		 Variable =>  z
+		 Integer value:: 23
+
+=============== RESTART: C:\Users\lucag\Downloads\parserblock.py ===============
+[1, 1, 4, 2, 3, 5, 6, 7, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+INPUT::      x=   23 ; y=  100;  z = 23 ;
+ New Block => 
+	 Assignment node => 
+		 Variable =>  x
+		 Integer value:: 23
+	 Assignment node => 
+		 Variable =>  y
+		 Integer value:: 100
+	 Assignment node => 
+		 Variable =>  z
+		 Integer value:: 23
+
+=============== RESTART: C:\Users\lucag\Downloads\parserblock.py ===============
+[1, 1, 4, 2, 3, 5, 6, 7, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+INPUT::      x=   23 ; y=  100;  z = 23 ;
+ New Block => 
+	 Assignment node => 
+		 Variable =>  x
+		 Integer value:: 23
+	 Assignment node => 
+		 Variable =>  y
+		 Integer value:: 100
+	 Assignment node => 
+		 Variable =>  z
+		 Integer value:: 23
+
+=============== RESTART: C:\Users\lucag\Downloads\parserblock.py ===============
+[1, 1, 4, 2, 3, 5, 6, 7, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+INPUT:: x=   23 ; y=  100;  z = 23 ;
+ New Block => 
+	 Assignment node => 
+		 Variable =>  x
+		 Integer value:: 23
+	 Assignment node => 
+		 Variable =>  y
+		 Integer value:: 100
+	 Assignment node => 
+		 Variable =>  z
+		 Integer value:: 23
+
+============= RESTART: C:\Users\lucag\Downloads\lexerassignments.py ============
+[1, 1, 4, 2, 3, 5, 6, 7, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+INPUT:: x=23 ; y= 100;   z=4 ;
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.integer 4
+TokenType.whitespace  
+TokenType.semicolon ;
+
+=============== RESTART: C:\Users\lucag\Downloads\parserblock.py ===============
+[1, 1, 4, 2, 3, 5, 6, 7, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+INPUT:: x=   23 ; y=  100;  z = 23 ;
+Traceback (most recent call last):
+  File "C:\Users\lucag\Downloads\parserblock.py", line 91, in <module>
+    parser.Parse()
+  File "C:\Users\lucag\Downloads\parserblock.py", line 86, in Parse
+    self.ASTroot = self.ParseProgram()
+  File "C:\Users\lucag\Downloads\parserblock.py", line 82, in ParseProgram
+    b = self.ParseBlock()
+  File "C:\Users\lucag\Downloads\parserblock.py", line 70, in ParseBlock
+    s = self.ParseStatement()
+  File "C:\Users\lucag\Downloads\parserblock.py", line 61, in ParseStatement
+    return self.ParseAssignment()
+  File "C:\Users\lucag\Downloads\parserblock.py", line 55, in ParseAssignment
+    assignment_rhs = self.ParseExpression()
+  File "C:\Users\lucag\Downloads\parserblock.py", line 39, in ParseExpression
+    return ast.ASTIntegerNode(value)
+NameError: name 'value' is not defined. Did you mean: 'False'?
+
+=============== RESTART: C:\Users\lucag\Downloads\parserblock.py ===============
+[1, 1, 4, 2, 3, 5, 6, 7, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1]
+INPUT:: x=   23 ; y=  100;  z = 23 ;
+ New Block => 
+	 Assignment node => 
+		 Variable =>  x
+		 Integer value:: 23
+	 Assignment node => 
+		 Variable =>  y
+		 Integer value:: 100
+	 Assignment node => 
+		 Variable =>  z
+		 Integer value:: 23
+
+============= RESTART: C:\Users\lucag\Downloads\lexerassignments.py ============
+Traceback (most recent call last):
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 275, in <module>
+    lex = Lexer()
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 69, in __init__
+    self.InitialiseTxTable();
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 111, in InitialiseTxTable
+    self.Tx[14][self.lexeme_list.index("hexLetter")] = 15
+IndexError: list index out of range
+
+============= RESTART: C:\Users\lucag\Downloads\lexerassignments.py ============
+[1, 1, 4, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, -1, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 15, -1]
+[-1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 15, -1]
+INPUT:: x=23 ; y= 100;   z=4 ;
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.integer 4
+TokenType.whitespace  
+TokenType.semicolon ;
+
+============= RESTART: C:\Users\lucag\Downloads\lexerassignments.py ============
+[1, 1, 4, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, -1, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 15, -1]
+[-1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 15, -1]
+INPUT:: x=23 ; y= 100;   z=4 ; []jg{g} [f fd]
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.integer 4
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.void error
+TokenType.identifier g
+TokenType.void error
+TokenType.identifier fd
+TokenType.void error
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+[1, 1, 4, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, -1, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 15, -1]
+[-1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 15, -1]
+INPUT:: x=23 ; y= 100;   z=4 ; []jg{g} [f fd]
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.integer 4
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.closeSquareBracket ]
+TokenType.identifier jg
+TokenType.openCurlyBracket {
+TokenType.identifier g
+TokenType.closeCurlyBracket }
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.identifier f
+TokenType.whitespace  
+TokenType.identifier fd
+TokenType.closeSquareBracket ]
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+Traceback (most recent call last):
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 286, in <module>
+    lex = Lexer()
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 69, in __init__
+    self.InitialiseTxTable();
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 113, in InitialiseTxTable
+    self.Tx[16][self.lexeme_list.index("hexLetter")] = 17
+IndexError: list index out of range
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+[1, 1, 4, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, -1, -1]
+[1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+[-1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 15, -1]
+[-1, -1, 16, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 16, -1]
+[-1, -1, 17, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 17, -1]
+[-1, -1, 18, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 18, -1]
+[-1, -1, 19, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 19, -1]
+[-1, -1, 20, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 20, -1]
+[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+INPUT:: x=23 ; y= 100;   z=4 ; [#98ffFf]jg{g} [f fd]
+POPPED =>  [-2]
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.integer 4
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.hexLiteral #98ffFf
+TokenType.closeSquareBracket ]
+TokenType.identifier jg
+TokenType.openCurlyBracket {
+TokenType.identifier g
+TokenType.closeCurlyBracket }
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.void error
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: x=23 ; y= 100;   z=4 ; [#98ffFf]jg{g} [f fd]
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.integer 4
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.hexLiteral #98ffFf
+TokenType.closeSquareBracket ]
+TokenType.identifier jg
+TokenType.openCurlyBracket {
+TokenType.identifier g
+TokenType.closeCurlyBracket }
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.identifier f
+TokenType.whitespace  
+TokenType.identifier fd
+TokenType.closeSquareBracket ]
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+Traceback (most recent call last):
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 297, in <module>
+    lex = Lexer()
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 69, in __init__
+    self.InitialiseTxTable();
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 128, in InitialiseTxTable
+    self.Tx[21][self.lexeme_list.index("digit")] = 22
+IndexError: list index out of range
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: x=23 ; y= 100;   z=4.0 ; [#98ffFf]jg{g} [f fd]
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.floatLiteral 4.0
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.hexLiteral #98ffFf
+TokenType.closeSquareBracket ]
+TokenType.identifier jg
+TokenType.openCurlyBracket {
+TokenType.identifier g
+TokenType.closeCurlyBracket }
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.identifier f
+TokenType.whitespace  
+TokenType.identifier fd
+TokenType.closeSquareBracket ]
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: x=23 ; y= 100;   z=4.0 ; [#98ffFf]jg{g} [f fd]
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.floatLiteral 4.0
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.colourLiteral #98ffFf
+TokenType.closeSquareBracket ]
+TokenType.identifier jg
+TokenType.openCurlyBracket {
+TokenType.identifier g
+TokenType.closeCurlyBracket }
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.identifier f
+TokenType.whitespace  
+TokenType.identifier fd
+TokenType.closeSquareBracket ]
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: x=23 ; y= 100;   z=4.0 ; [#98ffFf]jg{g} [f fd] for:while __width __write_box hello
+Traceback (most recent call last):
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 297, in <module>
+    toks = lex.GenerateTokens("x=23 ; y= 100;   z=4.0 ; [#98ffFf]jg{g} [f fd] for:while __width __write_box hello")
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 286, in GenerateTokens
+    token, lexeme = self.NextToken(src_program_str, src_program_idx)
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 270, in NextToken
+    return self.GetTokenTypeByFinalState(state, lexeme), lexeme
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 163, in GetTokenTypeByFinalState
+    keywordToken = self.keywordLookup(lexeme)
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 157, in keywordLookup
+    elif lexeme == '__write_box': return Token(TokenType.writeboxKeyword, lexeme)
+  File "C:\Users\lucag\AppData\Local\Programs\Python\Python310\lib\enum.py", line 437, in __getattr__
+    raise AttributeError(name) from None
+AttributeError: writeboxKeyword. Did you mean: 'writeBoxKeyword'?
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: x=23 ; y= 100;   z=4.0 ; [#98ffFf]jg{g} [f fd] for:while __width __write_box hello
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.floatLiteral 4.0
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.colourLiteral #98ffFf
+TokenType.closeSquareBracket ]
+TokenType.identifier jg
+TokenType.openCurlyBracket {
+TokenType.identifier g
+TokenType.closeCurlyBracket }
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.identifier f
+TokenType.whitespace  
+TokenType.identifier fd
+TokenType.closeSquareBracket ]
+TokenType.whitespace  
+TokenType.forKeyword for
+TokenType.colon :
+TokenType.whileKeyword while
+TokenType.whitespace  
+TokenType.identifier __width
+TokenType.whitespace  
+TokenType.writeBoxKeyword __write_box
+TokenType.whitespace  
+TokenType.identifier hello
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: x=23 ; y= 100;   z=4.0 ; [#98ffFf]jg{g} [f fd] for:while __width __write_box hello
+TokenType.identifier x
+TokenType.equals =
+TokenType.integer 23
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.identifier y
+TokenType.equals =
+TokenType.whitespace  
+TokenType.integer 100
+TokenType.semicolon ;
+TokenType.whitespace    
+TokenType.identifier z
+TokenType.equals =
+TokenType.floatLiteral 4.0
+TokenType.whitespace  
+TokenType.semicolon ;
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.colourLiteral #98ffFf
+TokenType.closeSquareBracket ]
+TokenType.identifier jg
+TokenType.openCurlyBracket {
+TokenType.identifier g
+TokenType.closeCurlyBracket }
+TokenType.whitespace  
+TokenType.openSquareBracket [
+TokenType.identifier f
+TokenType.whitespace  
+TokenType.identifier fd
+TokenType.closeSquareBracket ]
+TokenType.whitespace  
+TokenType.forKeyword for
+TokenType.colon :
+TokenType.whileKeyword while
+TokenType.whitespace  
+TokenType.padWidth __width
+TokenType.whitespace  
+TokenType.writeBoxKeyword __write_box
+TokenType.whitespace  
+TokenType.identifier hello
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>! <= > ! !=
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.void error
+TokenType.whitespace  
+TokenType.void error
+TokenType.equals =
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+Traceback (most recent call last):
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 324, in <module>
+    lex = Lexer()
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 63, in __init__
+    self.states_accp = [1, 2, 3, 4, 5] + list(range(6,14)) + [20] + list(range(22,26) + [27])
+TypeError: unsupported operand type(s) for +: 'range' and 'list'
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>! <= > ! !=
+POPPED =>  [-2]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.void error
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>! <= > ! !=
+POPPED =>  [-2]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.void error
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>! <= > ! !=
+POPPED =>  [-2]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.void error
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>! <= > ! !=
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.void error
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>! <= > ! !=
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.void error
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>! <= > ! !=a b
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.void error
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+TokenType.whitespace  
+TokenType.identifier b
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>! != <= > ! !=a b
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.void error
+TokenType.relationalOp <=
+TokenType.whitespace  
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+TokenType.whitespace  
+TokenType.identifier b
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=> != <= > ! !=a b
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.relationalOp !=
+TokenType.whitespace  
+TokenType.relationalOp <=
+TokenType.whitespace  
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+TokenType.whitespace  
+TokenType.identifier b
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>!= <= > ! !=a b
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.relationalOp !=
+TokenType.whitespace  
+TokenType.relationalOp <=
+TokenType.whitespace  
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+TokenType.whitespace  
+TokenType.identifier b
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <=>!= ! <= > ! !=a b
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+POPPED =>  [-2, 0]
+POPPED =>  [-2]
+TokenType.relationalOp <=
+TokenType.relationalOp >
+TokenType.relationalOp !=
+TokenType.whitespace  
+TokenType.void error
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.void error
+TokenType.whitespace  
+TokenType.identifier b
+
+=========== RESTART: C:\Users\lucag\Downloads\lexerassignments.py ===========
+INPUT:: <= > != <= > != a b
+TokenType.relationalOp <=
+TokenType.whitespace  
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.relationalOp !=
+TokenType.whitespace  
+TokenType.relationalOp <=
+TokenType.whitespace  
+TokenType.relationalOp >
+TokenType.whitespace  
+TokenType.relationalOp !=
+TokenType.whitespace  
+TokenType.identifier a
+TokenType.whitespace  
+TokenType.identifier b
+>>> 
+============== RESTART: C:\Users\lucag\Downloads\parserblock.py =============
+Traceback (most recent call last):
+  File "C:\Users\lucag\Downloads\parserblock.py", line 91, in <module>
+    parser = Parser("x=   23 ; y=  100;  z = 23 ;")
+  File "C:\Users\lucag\Downloads\parserblock.py", line 9, in __init__
+    self.lexer = lex.Lexer()
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 71, in __init__
+    self.InitialiseTxTable();
+  File "C:\Users\lucag\Downloads\lexerassignments.py", line 148, in InitialiseTxTable
+    if debug == True:
+NameError: name 'debug' is not defined
+>>> 
+============== RESTART: C:\Users\lucag\Downloads\parserblock.py =============
+INPUT:: x=   23 ; y=  100;  z = 23 ;
+ New Block => 
+	 Assignment node => 
+		 Variable =>  x
+		 Integer value:: 23
+	 Assignment node => 
+		 Variable =>  y
+		 Integer value:: 100
+	 Assignment node => 
+		 Variable =>  z
+		 Integer value:: 23

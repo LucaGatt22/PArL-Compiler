@@ -1,0 +1,62 @@
+INPUT:: x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);
+ Program => 
+	 Assignment node => 
+		 Identifier:: x
+		 Expr node => 
+			 SimpleExpr node => 
+				 Term node => 
+					 Integer value:: 23
+	 Assignment node => 
+		 Identifier:: y
+		 Expr node => 
+			 SimpleExpr node => 
+				 Term node => 
+					 Integer value:: 100
+	 New Block => 
+		 Assignment node => 
+			 Identifier:: z
+			 Expr node => 
+				 SimpleExpr node => 
+					 Term node => 
+						 Integer value:: 23
+		 Assignment node => 
+			 Identifier:: xy
+			 Expr node => 
+				 SimpleExpr node => 
+					 Term node => 
+						 Integer value:: 3
+	 FunctionDecl node => 
+		 Identifier:: hello
+		 Type value:: bool
+		 New Block => 
+			 RtrnStatement node => 
+				 Expr node => 
+					 SimpleExpr node => 
+						 Term node => 
+							 Integer value:: 2
+	 Assignment node => 
+		 Identifier:: x
+		 Expr node => 
+			 SimpleExpr node => 
+				 Term node => 
+					 FunctionCall node => 
+						 Identifier:: hello
+				 AdditiveOp value:: +
+				 Term node => 
+					 Integer value:: 2
+					 MultiplicativeOp value:: *
+					 Integer value:: 3
+					 MultiplicativeOp value:: /
+					 Integer value:: 6
+				 AdditiveOp value:: -
+				 Term node => 
+					 Integer value:: 2
+					 MultiplicativeOp value:: *
+					 SubExpr node => 
+						 Expr node => 
+							 SimpleExpr node => 
+								 Term node => 
+									 Integer value:: 8
+								 AdditiveOp value:: -
+								 Term node => 
+									 Integer value:: 4
