@@ -28,13 +28,26 @@ class SymbolTable:
         # need to use lookup in frames other than the current frame too
 
     # pop() - list has pop() function already
-
-    def update(self, name:str, value):
-        if name in self.currentFrame:
-            self.currentFrame[name]['value'] = value # check type before update with possible error to user
+    def pop(self):
+        if self.frames:
+            self.currentFrame = self.frames.pop()
         else:
-            raise ValueError(f"Symbol '{name}' not found in the symbol table.")
+            raise IndexError("Cannot pop from an empty symbol table.")
 
+    '''
+    update() - It changes/updates a symbol's value
+    @return void as updates symbol's value in the function
+    '''
+    def update(self, name:str, value):
+        found = False
+        for i in range(len(self.frames) - 1, -1, -1):
+            if name in self.frames[i]:
+                self.frames[i][name]['value'] = value  # check type before update with possible error to user
+                found = True
+                break
+        if not found:
+            raise ValueError(f"Symbol '{name}' not found in the symbol table.")
+    
     # def delete(self, name:str): # delete operation on a symbol is not used. Pop operation is done on a frame when end of repsective scope is reached.
     #     if name in self.symbols:
     #         del self.symbols[name]
