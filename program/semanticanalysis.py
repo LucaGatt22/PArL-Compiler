@@ -5,6 +5,12 @@ from symboltable import SymbolTable
 class SemanticAnalyser:
     self.lexer = lex.Lexer()
     
+    def assignTypeSymbol(self, astVariableDeclNode):
+        # variable declaration - let x: int = 0
+        if (astVariableDeclNode.name == 'ASTVariableDeclNode'): raise Exception("not a Variable Declaration Node")
+        
+
+
     def checkType(self):
         if ()
 

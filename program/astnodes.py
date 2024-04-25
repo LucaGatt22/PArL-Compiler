@@ -283,8 +283,8 @@ class ASTVariableDeclSuffixNode(ASTNode):
         self.name = "ASTVariableDeclSuffixNode"
     def __init__(self, typeLiteral, expr):
         __init__(self)
-        self.identifier = identifier # children
-        self.variableDeclSuffix = variableDeclSuffix
+        self.typeLiteral = typeLiteral # children
+        self.expr = expr
     def __init__(self, variableDeclArray):
         __init__(self)
         self.variableDeclArray = variableDeclArray
