@@ -1,5 +1,5 @@
-# Now we need the parser (using tokens produced by the Lexer) to build the AST - this code snipper is able to build ASTAssignmentNode trees. LHS can only be an integer here ....
-# A small predictive recursive descent parser
+# Now we need the parser (using tokens produced by the Lexer) to build the AST
+# A predictive recursive descent parser
 import astvisitor as ast
 import lexerassignments as lex
 
@@ -469,20 +469,7 @@ class Parser:
                 if self.ParseTokenNoValue(lex.TokenType.semicolon):
                     return node
         return aggregateFunc
-
-##    ParseStatement = lambda self: self.ParseAnOption([
-##        self.ParseNodeAndSemicolon(self.ParseVariableDecl),
-##        self.ParseNodeAndSemicolon(self.ParseAssignment),
-##        self.ParseNodeAndSemicolon(self.ParsePrintStatement),
-##        self.ParseNodeAndSemicolon(self.ParseDelayStatement),
-##        self.ParseNodeAndSemicolon(self.ParseWriteStatement),
-##        self.ParseIfStatement,
-##        self.ParseForStatement,
-##        self.ParseWhileStatement,
-##        self.ParseNodeAndSemicolon(self.ParseRtrnStatement),
-##        self.ParseFunctionDecl,
-##        self.ParseBlock
-##    ])
+    
     def ParseStatement(self):
         if self.test: print('accessed ParseStatement')
         return self.ParseAnOption([

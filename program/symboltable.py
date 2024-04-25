@@ -1,9 +1,3 @@
-from parserblock import Parser
-
-class SymbolTableChecker:
-    def checkType(typeLiteral):
-        return (typeLiteral == 'float') | (typeLiteral=='int') | (typeLiteral == 'bool') | (typeLiteral == 'colour')
-
 class SymbolTable:
 
     def __init__(self):
