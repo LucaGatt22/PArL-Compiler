@@ -1,6 +1,6 @@
 # Now we need the parser (using tokens produced by the Lexer) to build the AST
 # A predictive recursive descent parser
-import astvisitor as ast
+from printnodesvisitor import PrintNodesVisitor
 import lexerassignments as lex
 
 class Parser:
@@ -524,5 +524,5 @@ if __name__ == '__main__':
 ##    parser = Parser('{ z = 23 ; xy=3; }')
     parser.Parse()
 
-    print_visitor = ast.PrintNodesVisitor()
+    print_visitor = PrintNodesVisitor()
     parser.ASTroot.accept(print_visitor)

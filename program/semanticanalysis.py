@@ -1,9 +1,10 @@
 from parserblock import Parser # parse, can output (like a log)
 from symboltable import SymbolTable
+from printnodesvisitor import PrintNodesVisitor
 
 
-class SemanticAnalyser:
-    self.lexer = lex.Lexer()
+class SemanticAnalysisVisitor:
+    # visitor only visits tree so need for lexer and parser
     
     def assignTypeSymbol(self, astVariableDeclNode):
         # variable declaration - let x: int = 0
@@ -28,11 +29,12 @@ if __name__ == '__main__':
 
     
 
-    # semantic analysis
-    
+    # semantic analysis (visitor)
+    semantic_visitor = SemanticAnalysisVisitor()
+    parser.ASTroot.accept(print_visitor)
 
 
 
-    # visitor
+    # print nodes visitor
     print_visitor = ast.PrintNodesVisitor()
     parser.ASTroot.accept(print_visitor)
