@@ -181,13 +181,13 @@ class PrintNodesVisitor(ASTVisitor):
         try: # https://www.w3schools.com/python/python_try_except.asp
             node.variableDeclArray.accept()
         except AttributeError: # if variableDeclArray does not exist in the node instance
-            node.identifier.accept()
-            node.variableDeclSuffix.accept()
+            node.typeLiteral.accept()
+            node.expr.accept()
         self.dec_tab_count()
 
     def visit_variabledeclarray_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"VariableDeclSuffix node => ")
+        print('\t' * self.tab_count, str(nodeName)+"VariableDeclArray node => ")
         self.inc_tab_count()
         try:
             node.integerLiteral.accept()

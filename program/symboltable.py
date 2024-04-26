@@ -8,18 +8,27 @@ class SymbolTable:
         self.frames.append(currentFrame)
         self.currentFrame = {} # reinitialise
 
-    def insert(self, name:str, typeSymbol, value):
+    def insert(self, name:str, typeSymbol, value=None):
         self.currentFrame[name] = {
+            'name': name
             'type': typeSymbol, # check type before update with possible error to user
             'value': value
         }
 
-    def lookup(self, name):
+    def lookupCurrentFrame(self, name):
         try:
-            return self.currentFrame.get(name).get('value')
+            return self.currentFrame.get(name)
         except AttributeError:
             pass
         # need to use lookup in frames other than the current frame too
+    def lookup(self, name):
+        symbol = self.lookupCurrentFrame(name)
+        if symbol != None: return symbol
+        for frame in reversed(self.frames):
+            if name in frame:
+                return frame[name]
+    def lookupGetType(self, name):
+        return self.lookup(name).get('type')
 
     # pop() - list has pop() function already
     def pop(self):
