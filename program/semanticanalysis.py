@@ -287,6 +287,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_functiondecl_node(self, node):
         self.node_count += 1
+        symboltable.push()
         print('\t' * self.tab_count, "FunctionDecl node => ")
         self.inc_tab_count()
         name = node.identifier.accept(self)
@@ -296,34 +297,6 @@ class SemanticAnalysisVisitor(ASTVisitor):
         if node.integerLiteral != None: node.integerLiteral.accept(self)
         node.block.accept(self)
         self.dec_tab_count()
-
-        
-if __name__ == '__main__':
-    #Create a print visitor instance
-    print_visitor = PrintNodesVisitor()
-
-    #assume root node the AST assignment node .... 
-    #x=23
-    print("Building AST for assigment statement x=23;")
-    assignment_lhs = ASTVariableNode("x")
-    assignment_rhs = ASTIntegerNode(23)
-    root = ASTAssignmentNode(assignment_lhs, assignment_rhs)
-    root.accept(print_visitor)
-    print("Node Count => ", print_visitor.node_count)
-    print("----")
-    #assume root node the AST variable node .... 
-    #x123 
-    print("Building AST for variable x123;")
-    root = ASTVariableNode("x123")
-    root.accept(print_visitor)
-    print("Node Count => ", print_visitor.node_count)
-    # my test
-    print("----")
-    print("Building AST for variable test;")
-    root = ASTBoolNode(False)
-    root.accept(print_visitor)
-    print("Node Count => ", print_visitor.node_count)
-
 
 
 if __name__ == '__main__':

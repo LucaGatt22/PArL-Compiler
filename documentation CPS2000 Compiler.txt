@@ -7,3 +7,16 @@ Every Python file is constructed closely to the e-BNF provided in the assginment
 letter, digit and hex are the character categories handled by Lexer but not by Parser. The lexer produces tokens such as identifiers, keywords, values and operators. The parser parses the tokens which are created for statements for Type (ASTTypeNode) onwards (excluding the identifier), and tokens representing characters such as the semicolon and the colon.
 
 The list of token types is in the TokenType class of lexerassignments.py
+
+Lexer - creates tokens
+Parser - generates AST (Abstract Syntax Tree)
+PrintNodesVisitor - traverses through AST and prints the details of the nodes to have a visual of the tree.
+SemanticAnalysis - This is a visitor, meaning it traverses through AST, this further validating program through type and scope checking.
+ - Each AST node has a corresponding visit_node() function. For example, an assignment node has the visit_assignment_node().
+ - An example of type check: visit_assignment_node checks that the expression type corresponds with the variable type as stored in the symbol table.
+SymbolTable - Now that the symbol table is mentioned, the symbol table interacts with both the SemanticAnalysisVisitor and the CodeGenerationVisitor.
+ - The symbol table is split into frames, each frame containing a dictionary/mapping between symbol names and their type and value. This is so that the symbol table keeps record of all the symbols created grouped by the scope in which they were created.
+ - The symbol table is a stack of frames. This means that LIFO structure is implemented. At the start of a new scope, an empty frame is pushed on the top of the stack. Similarly, at the end of a scope, the current frame is popped off the stack.
+ - The implemented symbol table is still has a stack of frames, but has also the currentFrame. The current frame is not found in the stack. Opening a scope means adding the current frame to the top of the stack and emptying `currentFrame` for the new scope. Similarly, popping means removing the removing the top frame in the stack and placing it in `currentFrame` while discarding its old contents.
+ - Although the symbol table has the stack functions (push and pop), it has also lookup functions (in current frame and in all frames), an insert() and an update() function.
+CodeGenerationVisitor - It generates PArIR instrucions based on the PArL program given. **Not implemented yet.**
