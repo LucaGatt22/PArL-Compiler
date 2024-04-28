@@ -20,17 +20,16 @@ class SemanticAnalysisVisitor(ASTVisitor):
         print('\t' * self.tab_count, "Integer value::", int_node.value)
 
     def visit_assignment_node(self, ass_node):
-        self.node_count += 1
-        print('\t' * self.tab_count, "Assignment node => ")
-        self.inc_tab_count()        
-        ass_node.id.accept(self)
-        ass_node.expr.accept(self)
-        self.dec_tab_count()
+        self.node_count += 1     
+        identifier = ass_node.id.accept(self)
+        exprType = ass_node.expr.accept(self)
+        symbolType = symboltable.lookupGetType(identifier)
+        if symbolType != exprType: raise Exception("TypeConflictError: Expression type does not match with variable type.")
 
     visit_variable_node = lambda self, var_node: self.visit_identifier_node(var_node) # alias
     def visit_identifier_node(self, var_node):
         self.node_count += 1
-        print('\t' * self.tab_count, "Identifier::", var_node.lexeme)
+        return symboltable.lookupGetType(var_node.lexeme)
 
     def visit_block_node(self, block_node):
         self.node_count += 1
@@ -52,13 +51,16 @@ class SemanticAnalysisVisitor(ASTVisitor):
     def visit_type_node(self, type_node):
         self.node_count += 1
         print('\t' * self.tab_count, "Type value::", type_node.typeLiteral)
+        
+        return type_node.typeLiteral
 
     def visit_literal_node(self, literal_node):
         self.node_count += 1
         print('\t' * self.tab_count, "Literal node => ")
         self.inc_tab_count()
-        literal_node.literal.accept(self)
+        valueType = literal_node.literal.accept(self)
         self.dec_tab_count()
+        return valueType
 
 
     '''
@@ -74,8 +76,9 @@ class SemanticAnalysisVisitor(ASTVisitor):
         if isParentNode_Value_Cmd == 'parent':
             print('\t' * self.tab_count, nodeNameStr+" node => ")
             self.inc_tab_count()
-            attrNode.accept(self)
+            exprType = attrNode.accept(self) # Should it be called exprType?
             self.dec_tab_count()
+            return exprType
         elif isParentNode_Value_Cmd == 'value':
             print('\t' * self.tab_count, nodeNameStr+" value::", attrNode)
         elif isParentNode_Value_Cmd == 'cmd':
@@ -84,10 +87,13 @@ class SemanticAnalysisVisitor(ASTVisitor):
         
     def visit_bool_node(self, bool_node):
         self.visit_general(bool_node.value, "Bool", 'value')
+        return 'bool'
     def visit_float_node(self, float_node):
         self.visit_general(float_node.value, "Float", 'value')
+        return 'float'
     def visit_colour_node(self, colour_node):
         self.visit_general(colour_node.value, "Colour", 'value')
+        return 'colour'
     def visit_padwidth_node(self):
         self.visit_general(None, "PadWidth", 'cmd')
     def visit_padheight_node(self):
@@ -97,8 +103,9 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.node_count += 1
         print('\t' * self.tab_count, "PadRead node => ")
         self.inc_tab_count()
-        padread_node.exprLeft.accept(self)
-        padread_node.exprRight.accept(self)
+        padread_node.exprX.accept(self)
+        padread_node.exprY.accept(self)
+        if (exprXType != 'int') | (exprYType != 'int'): raise Exception("Expected int in __read statement.")
         self.dec_tab_count()
 
     def visit_padrandi_node(self, node):
@@ -138,7 +145,8 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.dec_tab_count()
 
     def visit_subexpr_node(self, subexpr_node):
-        self.visit_general(subexpr_node.expr, "SubExpr", 'parent')
+        exprType = self.visit_general(subexpr_node.expr, "SubExpr", 'parent')
+        return exprType
 
     def visit_unary_node(self, node):
         # commented code assumes '-' and 'not' are the same # self.visit_general(node.expr, "Unary", 'parent')
@@ -146,25 +154,33 @@ class SemanticAnalysisVisitor(ASTVisitor):
         print('\t' * self.tab_count, str(nodeName)+"Unary node => ")
         self.inc_tab_count()
         print('\t' * self.tab_count, "Unary operator::", node.unaryOp)
-        node.expr.accept(self)
+        exprType = node.expr.accept(self)
         self.dec_tab_count()
+        return exprType
 
     def visit_factor_node(self, node):
-        self.visit_general(node.childNode, "Factor", 'parent')
+        exprType = self.visit_general(node.childNode, "Factor", 'parent')
+        return exprType
 
     def visit_term_node(self, node):
-        self.visit_oneListAttribute(node.nodes, 'Term')
+        exprType = self.visit_oneListAttribute(node.nodes, 'Term')
+        return exprType
+
     def visit_simpleexpr_node(self, node):
-        self.visit_oneListAttribute(node.nodes, 'SimpleExpr')
+        exprType = self.visit_oneListAttribute(node.nodes, 'SimpleExpr')
+        return exprType
 
     def visit_expr_node(self, node):
-        self.visit_oneListAttribute(node.nodes, 'Expr')
+        exprType = self.visit_oneListAttribute(node.nodes, 'Expr')
         
         # as clause
-        if node.typeLiteral:
+        if node.typeLiteral != None:
             self.inc_tab_count()
             print('\t' * self.tab_count, "Type::", node.typeLiteral)
             self.dec_tab_count()
+            return node.typeLiteral
+        return exprType
+
 
     def visit_variabledecl_node(self, variabledecl_node):
         self.node_count += 1
@@ -172,7 +188,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
         identifier = variabledecl_node.identifier.accept(self)
         symbolType = variabledecl_node.variableDeclSuffix.accept(self)
 
-        if symboltable.lookupCurrentFrame(identifier) != None: raise Exception('Variable already initialised')
+        if symboltable.lookupCurrentFrame(identifier) != None: raise Exception(f'Variable {identifier} already initialised')
         symboltable.insert(identifier, symbolType)
 
     def visit_variabledeclsuffix_node(self, node):
@@ -182,7 +198,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
         except AttributeError: # if variableDeclArray does not exist in the node instance
             symbolType = node.typeLiteral.accept()
             exprType = node.expr.accept()
-            if symbolType != exprType: raise Exception("TypeConflictError: Expression type is not equal to variable type.")
+            if symbolType != exprType: raise Exception("TypeConflictError: Expression type does not match with variable type.")
             return symbolType
 
     def visit_variabledeclarray_node(self, node):
@@ -198,11 +214,13 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.dec_tab_count()
 
     def visit_requireexpr_node(self, node, nodeName):
-        self.visit_general(node.expr, nodeName, 'parent')
+        exprType = self.visit_general(node.expr, nodeName, 'parent')
+        return exprType
     def visit_printstatement_node(self, node):
-        self.visit_requireexpr_node(node, "PrintStatement")
+        exprType = self.visit_requireexpr_node(node, "PrintStatement") # can be of any type
     def visit_delaystatement_node(self, node):
-        self.visit_requireexpr_node(node, "DelayStatement")
+        exprType = self.visit_requireexpr_node(node, "DelayStatement")
+        if exprType != 'int': raise Exception('Expected int in DelayStatement')
 
     def visit_writestatement_node(self, node):
         self.node_count += 1
@@ -219,37 +237,45 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"IfStatement node => ")
         self.inc_tab_count()
-        node.expr.accept(self)
+        exprType = node.expr.accept(self)
         node.blockIf.accept(self)
         if node.blockElse != None: node.blockElse.accept(self)
         self.dec_tab_count()
+        
+        if exprType != 'bool': raise Exception('Expected bool in IfStatement')
 
     def visit_forstatement_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"ForStatement node => ")
         self.inc_tab_count()
         if node.varDec != None: node.varDec.accept(self)
-        node.expr.accept(self)
+        exprType = node.expr.accept(self)
         if node.assignment != None: node.assignment.accept(self)
         node.block.accept(self)
         self.dec_tab_count()
+
+        if exprType != 'bool': raise Exception('Expected bool in ForStatement')
 
     def visit_whilestatement_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"WhileStatement node => ")
         self.inc_tab_count()
-        node.expr.accept(self)
+        exprType = node.expr.accept(self)
         node.block.accept(self)
         self.dec_tab_count()
+
+        if exprType != 'bool': raise Exception('Expected bool in WhileStatement')
 
     def visit_formalparam_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"FormalParam node => ")
         self.inc_tab_count()
-        node.identifier.accept(self)
-        node.typeLiteral.accept(self)
+        name = node.identifier.accept(self)
+        symbolType = node.typeLiteral.accept(self)
         if node.integerLiteral != None: node.integerLiteral.accept(self)
         self.dec_tab_count()
+
+        symboltable.insert(name, symbolType)
 
     def visit_formalparams_node(self, node):
         self.node_count += 1
@@ -263,7 +289,8 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.node_count += 1
         print('\t' * self.tab_count, "FunctionDecl node => ")
         self.inc_tab_count()
-        node.identifier.accept(self)
+        name = node.identifier.accept(self)
+        if symboltable.lookupCurrentFrame(name) != None: raise Exception(f'{name} already declared.')
         if node.formalParams != None: node.formalParams.accept(self)
         node.typeLiteral.accept(self)
         if node.integerLiteral != None: node.integerLiteral.accept(self)

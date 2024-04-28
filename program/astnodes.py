@@ -139,10 +139,10 @@ class ASTPadHeightNode(ASTLiteralNode):
         visitor.visit_padheight_node(self)
 
 class ASTPadReadNode(ASTLiteralNode):
-    def __init__(self, exprLeft, exprRight):
+    def __init__(self, exprX, exprY):
         self.name = "ASTPadReadNode"
-        self.exprLeft = exprLeft
-        self.exprRight = exprRight
+        self.exprX = exprX
+        self.exprY = exprY
 
     def accept(self, visitor):
         visitor.visit_padread_node(self)

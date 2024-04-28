@@ -16,10 +16,7 @@ class SymbolTable:
         }
 
     def lookupCurrentFrame(self, name):
-        try:
-            return self.currentFrame.get(name)
-        except AttributeError:
-            pass
+        return self.currentFrame.get(name)
         # need to use lookup in frames other than the current frame too
     def lookup(self, name):
         symbol = self.lookupCurrentFrame(name)
@@ -27,8 +24,10 @@ class SymbolTable:
         for frame in reversed(self.frames):
             if name in frame:
                 return frame[name]
+        if symbol == None: raise Exception(f'Symbol {name} does not exist')
     def lookupGetType(self, name):
-        return self.lookup(name).get('type')
+        symbol = self.lookup(name)
+        return symbol.get('type')
 
     # pop() - list has pop() function already
     def pop(self):
