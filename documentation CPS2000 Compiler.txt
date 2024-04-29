@@ -14,9 +14,21 @@ PrintNodesVisitor - traverses through AST and prints the details of the nodes to
 SemanticAnalysis - This is a visitor, meaning it traverses through AST, this further validating program through type and scope checking.
  - Each AST node has a corresponding visit_node() function. For example, an assignment node has the visit_assignment_node().
  - An example of type check: visit_assignment_node checks that the expression type corresponds with the variable type as stored in the symbol table.
+ - To be able to do type checking for statements, the type of each expression is returned from the visit function, until the point of type check in a parent visit function is reached.
 SymbolTable - Now that the symbol table is mentioned, the symbol table interacts with both the SemanticAnalysisVisitor and the CodeGenerationVisitor.
  - The symbol table is split into frames, each frame containing a dictionary/mapping between symbol names and their type and value. This is so that the symbol table keeps record of all the symbols created grouped by the scope in which they were created.
  - The symbol table is a stack of frames. This means that LIFO structure is implemented. At the start of a new scope, an empty frame is pushed on the top of the stack. Similarly, at the end of a scope, the current frame is popped off the stack.
  - The implemented symbol table is still has a stack of frames, but has also the currentFrame. The current frame is not found in the stack. Opening a scope means adding the current frame to the top of the stack and emptying `currentFrame` for the new scope. Similarly, popping means removing the removing the top frame in the stack and placing it in `currentFrame` while discarding its old contents.
  - Although the symbol table has the stack functions (push and pop), it has also lookup functions (in current frame and in all frames), an insert() and an update() function.
 CodeGenerationVisitor - It generates PArIR instrucions based on the PArL program given. **Not implemented yet.**
+
+## More points on semantic SemanticAnalysis
+WriteStatement
+ - __write in PArL takes 3 expr i.e. colour, pointX, pointY
+ - __write_box in PArL takes 5 expr i.e. colour, topLeftPointX, topLeftPointY, bottomRightPointX, bottomRightPointY
+
+Function
+ - signature - A function signature is introduced to specify the function well to type check it.
+ - return - A function must have the abilty to return an expression - not tested
+
+##

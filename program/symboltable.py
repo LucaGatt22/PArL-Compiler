@@ -13,7 +13,7 @@ class SymbolTable:
             'name': name
             'type': typeSymbol, # check type before update with possible error to user
             'value': value
-        }
+        } # introduced a new type 'function' for identifiers of functions. Introduced function/method signature
 
     def lookupCurrentFrame(self, name):
         return self.currentFrame.get(name)
