@@ -12,7 +12,7 @@ class ASTStatementNode(ASTNode):
         self.statementSpecific = statementSpecific
 
     def accept(self, visitor):
-        visitor.visit_statement_node(self)
+        return visitor.visit_statement_node(self)
 
 
 class ASTExprNode():#ASTTermNode): # to replace ASTExpressionNode
@@ -29,7 +29,7 @@ class ASTExprNode():#ASTTermNode): # to replace ASTExpressionNode
         self.typeLiteral = typeLiteral
         
     def accept(self, visitor):
-        visitor.visit_expr_node(self)
+        return visitor.visit_expr_node(self)
 class ASTExpressionNode(ASTExprNode): # alias
     pass
 ##    def __init__(self):
@@ -41,7 +41,7 @@ class ASTVariableNode(ASTExpressionNode): # identifier
         self.lexeme = lexeme
 
     def accept(self, visitor):
-        visitor.visit_variable_node(self)
+        return visitor.visit_variable_node(self)
 
 class ASTIntegerNode(ASTExpressionNode): # ASTLiteralNode
     def __init__(self, v):
@@ -49,7 +49,7 @@ class ASTIntegerNode(ASTExpressionNode): # ASTLiteralNode
         self.value = v
 
     def accept(self, visitor):
-        visitor.visit_integer_node(self)        
+        return visitor.visit_integer_node(self)        
 
 class ASTAssignmentNode(ASTStatementNode):
     def __init__(self, ast_var_node, ast_expression_node):
@@ -58,7 +58,7 @@ class ASTAssignmentNode(ASTStatementNode):
         self.expr = ast_expression_node
 
     def accept(self, visitor):
-        visitor.visit_assignment_node(self)                
+        return visitor.visit_assignment_node(self)                
 
 class ASTBlockNode(ASTNode):
     def __init__(self):
@@ -69,7 +69,7 @@ class ASTBlockNode(ASTNode):
         self.stmts.append(node)
 
     def accept(self, visitor):
-        visitor.visit_block_node(self)
+        return visitor.visit_block_node(self)
 
 
 class ASTProgramNode(ASTBlockNode):
@@ -81,7 +81,7 @@ class ASTProgramNode(ASTBlockNode):
 ##        self.stmts.append(node)
 
     def accept(self, visitor):
-        visitor.visit_program_node(self) # program is a block
+        return visitor.visit_program_node(self) # program is a block
 
 
 class ASTTypeNode(ASTNode):
@@ -90,7 +90,7 @@ class ASTTypeNode(ASTNode):
         self.typeLiteral = typeLiteral #  ‘float’ | ‘int’ | ‘bool’ | ‘colour’
 
     def accept(self, visitor):
-        visitor.visit_type_node(self)
+        return visitor.visit_type_node(self)
 
 class ASTLiteralNode(ASTExpressionNode):
     def __init__(self, literal):
@@ -98,7 +98,7 @@ class ASTLiteralNode(ASTExpressionNode):
         self.literal = literal # bool,int,float,colour,padwidth,padheight,padRead
 
     def accept(self, visitor):
-        visitor.visit_literal_node(self)
+        return visitor.visit_literal_node(self)
 
 class ASTBoolNode(ASTLiteralNode):
     def __init__(self, value):
@@ -106,7 +106,7 @@ class ASTBoolNode(ASTLiteralNode):
         self.value = value # true, false
 
     def accept(self, visitor):
-        visitor.visit_bool_node(self)
+        return visitor.visit_bool_node(self)
 
 class ASTFloatNode(ASTLiteralNode):
     def __init__(self, v):
@@ -114,7 +114,7 @@ class ASTFloatNode(ASTLiteralNode):
         self.value = v
 
     def accept(self, visitor):
-        visitor.visit_float_node(self)
+        return visitor.visit_float_node(self)
 
 class ASTColourNode(ASTLiteralNode):
     def __init__(self, v):
@@ -122,21 +122,21 @@ class ASTColourNode(ASTLiteralNode):
         self.value = v # 6-digit value without '#'
 
     def accept(self, visitor):
-        visitor.visit_colour_node(self)
+        return visitor.visit_colour_node(self)
 
 class ASTPadWidthNode(ASTLiteralNode):
     def __init__(self):
         self.name = "ASTPadWidthNode"
 
     def accept(self, visitor):
-        visitor.visit_padwidth_node(self)
+        return visitor.visit_padwidth_node(self)
 
 class ASTPadHeightNode(ASTLiteralNode):
     def __init__(self):
         self.name = "ASTPadHeightNode"
 
     def accept(self, visitor):
-        visitor.visit_padheight_node(self)
+        return visitor.visit_padheight_node(self)
 
 class ASTPadReadNode(ASTLiteralNode):
     def __init__(self, exprX, exprY):
@@ -145,7 +145,7 @@ class ASTPadReadNode(ASTLiteralNode):
         self.exprY = exprY
 
     def accept(self, visitor):
-        visitor.visit_padread_node(self)
+        return visitor.visit_padread_node(self)
 
 class ASTAbstractRequireExprNode(ASTNode): # abstract - not a node
     def __init__(self, expr):
@@ -153,7 +153,7 @@ class ASTAbstractRequireExprNode(ASTNode): # abstract - not a node
         self.expr = expr
 
     def accept(self, visitor):
-        visitor.visit_requireexpr_node(self)
+        return visitor.visit_requireexpr_node(self)
         
 class ASTPadRandINode(ASTNode):
     def __init__(self, exprLeft, expr):
@@ -162,7 +162,7 @@ class ASTPadRandINode(ASTNode):
         self.exprRight = exprRight
 
     def accept(self, visitor):
-        visitor.visit_padread_node(self)
+        return visitor.visit_padread_node(self)
 
 class ASTIdentifierArrayNode(ASTVariableNode):
     def __init__(self, variable, index:ASTExprNode):
@@ -171,7 +171,7 @@ class ASTIdentifierArrayNode(ASTVariableNode):
         self.index = index # expr
 
     def accept(self, visitor):
-        visitor.visit_identifierarray_node(self)
+        return visitor.visit_identifierarray_node(self)
 
 class ASTMultiOpNode(ASTNode):
     def __init__(self, operationValue):
@@ -179,7 +179,7 @@ class ASTMultiOpNode(ASTNode):
         self.operationValue = operationValue
 
     def accept(self, visitor):
-        visitor.visit_multiop_node(self)
+        return visitor.visit_multiop_node(self)
 
 class ASTAddOpNode(ASTNode):
     def __init__(self, operationValue):
@@ -187,7 +187,7 @@ class ASTAddOpNode(ASTNode):
         self.operationValue = operationValue
 
     def accept(self, visitor):
-        visitor.visit_addop_node(self)
+        return visitor.visit_addop_node(self)
 
 class ASTRelOpNode(ASTNode):
     def __init__(self, operationValue):
@@ -195,7 +195,7 @@ class ASTRelOpNode(ASTNode):
         self.operationValue = operationValue
 
     def accept(self, visitor):
-        visitor.visit_relop_node(self)
+        return visitor.visit_relop_node(self)
 
 class ASTActualParamsNode(ASTNode):
     def __init__(self, expr):
@@ -206,7 +206,7 @@ class ASTActualParamsNode(ASTNode):
         self.expr.append(expr_node)
 
     def accept(self, visitor):
-        visitor.visit_actualparams_node(self)
+        return visitor.visit_actualparams_node(self)
 
 class ASTFunctionCallNode(ASTNode):
     def __init__(self, iden, acParams=None):
@@ -215,7 +215,7 @@ class ASTFunctionCallNode(ASTNode):
         self.actualParams = acParams
 
     def accept(self, visitor):
-        visitor.visit_functioncall_node(self)
+        return visitor.visit_functioncall_node(self)
 
 class ASTSubExprNode(ASTExpressionNode):
     def __init__(self, expr):
@@ -223,7 +223,7 @@ class ASTSubExprNode(ASTExpressionNode):
         self.expr = expr
         
     def accept(self, visitor):
-        visitor.visit_subexpr_node(self)
+        return visitor.visit_subexpr_node(self)
 
 class ASTUnaryNode(ASTExpressionNode):
     def __init__(self, unaryOp, expr):
@@ -232,7 +232,7 @@ class ASTUnaryNode(ASTExpressionNode):
         self.expr = expr
 
     def accept(self, visitor):
-        visitor.visit_unary_node(self)
+        return visitor.visit_unary_node(self)
 
 class ASTFactorNode(ASTExpressionNode):
     def __init__(self, childNode):
@@ -240,7 +240,7 @@ class ASTFactorNode(ASTExpressionNode):
         self.childNode = childNode
 
     def accept(self, visitor):
-        visitor.visit_factor_node(self)
+        return visitor.visit_factor_node(self)
 
 class ASTTermNode(ASTExpressionNode):
     def __init__(self, factor):
@@ -252,7 +252,7 @@ class ASTTermNode(ASTExpressionNode):
         self.nodes.append(factor)
 
     def accept(self, visitor):
-        visitor.visit_term_node(self)
+        return visitor.visit_term_node(self)
 
 class ASTSimpleExprNode(ASTTermNode):
     def __init__(self, term):
@@ -264,7 +264,7 @@ class ASTSimpleExprNode(ASTTermNode):
         self.nodes.append(term)
 
     def accept(self, visitor):
-        visitor.visit_simpleexpr_node(self)
+        return visitor.visit_simpleexpr_node(self)
 
 
 ##class ASTAssignmentNode(ASTTermNode): # already done
@@ -276,7 +276,7 @@ class ASTVariableDeclNode(ASTNode):
         self.variableDeclSuffix = variableDeclSuffix
 
     def accept(self, visitor):
-        visitor.visit_variabledecl_node(self)
+        return visitor.visit_variabledecl_node(self)
 
 class ASTVariableDeclSuffixNode(ASTNode):
     def __init__(self):
@@ -290,7 +290,7 @@ class ASTVariableDeclSuffixNode(ASTNode):
         self.variableDeclArray = variableDeclArray
 
     def accept(self, visitor):
-        visitor.visit_variabledeclsuffix_node(self)
+        return visitor.visit_variabledeclsuffix_node(self)
 
 class ASTVariableDeclArrayNode(ASTNode):
     def __init__(self):
@@ -307,7 +307,7 @@ class ASTVariableDeclArrayNode(ASTNode):
         if (self.literals != None): self.literals.append(literal)
 
     def accept(self, visitor):
-        visitor.visit_variabledeclarray_node(self)
+        return visitor.visit_variabledeclarray_node(self)
         
 class ASTPrintStatementNode(ASTAbstractRequireExprNode):
     def __init__(self, expr):
@@ -315,7 +315,7 @@ class ASTPrintStatementNode(ASTAbstractRequireExprNode):
         self.expr = expr
 
     def accept(self, visitor):
-        visitor.visit_printstatement_node(self)
+        return visitor.visit_printstatement_node(self)
 
 class ASTDelayStatementNode(ASTAbstractRequireExprNode):
     def __init__(self, expr):
@@ -323,7 +323,7 @@ class ASTDelayStatementNode(ASTAbstractRequireExprNode):
         self.expr = expr
 
     def accept(self, visitor):
-        visitor.visit_delaystatement_node(self)
+        return visitor.visit_delaystatement_node(self)
 
 class ASTWriteStatementNode(ASTAbstractRequireExprNode):
     def __init__(self, expr1,expr2,expr3,expr4,expr5): # ‘__write_box’
@@ -334,7 +334,7 @@ class ASTWriteStatementNode(ASTAbstractRequireExprNode):
         self.exprs = [expr1,expr2,expr3]
 
     def accept(self, visitor):
-        visitor.visit_writestatement_node(self)
+        return visitor.visit_writestatement_node(self)
 
 class ASTRtrnStatementNode(ASTAbstractRequireExprNode): # return statement
     def __init__(self, expr):
@@ -342,7 +342,7 @@ class ASTRtrnStatementNode(ASTAbstractRequireExprNode): # return statement
         self.expr = expr
 
     def accept(self, visitor):
-        visitor.visit_rtrnstatement_node(self)
+        return visitor.visit_rtrnstatement_node(self)
 
 class ASTIfStatementNode(ASTAbstractRequireExprNode):
     def __init__(self, expr, blockIf, blockElse=None):
@@ -352,7 +352,7 @@ class ASTIfStatementNode(ASTAbstractRequireExprNode):
         self.blockElse = blockElse
 
     def accept(self, visitor):
-        visitor.visit_ifstatement_node(self)
+        return visitor.visit_ifstatement_node(self)
 
 class ASTForStatementNode(ASTAbstractRequireExprNode):
     def __init__(self, expr, block, varDec=None, assignment=None):
@@ -363,7 +363,7 @@ class ASTForStatementNode(ASTAbstractRequireExprNode):
         self.block = block
 
     def accept(self, visitor):
-        visitor.visit_forstatement_node(self)
+        return visitor.visit_forstatement_node(self)
 
 class ASTWhileStatementNode(ASTAbstractRequireExprNode):
     def __init__(self, expr, block):
@@ -372,7 +372,7 @@ class ASTWhileStatementNode(ASTAbstractRequireExprNode):
         self.block = block
 
     def accept(self, visitor):
-        visitor.visit_whilestatement_node(self)
+        return visitor.visit_whilestatement_node(self)
 
 class ASTFormalParamNode(ASTAbstractRequireExprNode):
     def __init__(self, identifier, typeLiteral, integerLiteral=None):
@@ -382,7 +382,7 @@ class ASTFormalParamNode(ASTAbstractRequireExprNode):
         self.integerLiteral = integerLiteral
 
     def accept(self, visitor):
-        visitor.visit_formalparam_node(self)
+        return visitor.visit_formalparam_node(self)
 
 class ASTFormalParamsNode(ASTAbstractRequireExprNode):
     def __init__(self, formalparam):
@@ -393,7 +393,7 @@ class ASTFormalParamsNode(ASTAbstractRequireExprNode):
         self.formalparams.append(formalparam)
 
     def accept(self, visitor):
-        visitor.visit_formalparams_node(self)
+        return visitor.visit_formalparams_node(self)
 
 class ASTFunctionDeclNode(ASTAbstractRequireExprNode):
     def __init__(self, identifier, typeLiteral, block, formalParams=None, integerLiteral=None):
@@ -405,8 +405,4 @@ class ASTFunctionDeclNode(ASTAbstractRequireExprNode):
         self.block = block
 
     def accept(self, visitor):
-        visitor.visit_functiondecl_node(self)
-
-
-
-
+        return visitor.visit_functiondecl_node(self)

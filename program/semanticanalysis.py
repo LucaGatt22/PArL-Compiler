@@ -3,6 +3,7 @@ from symboltable import SymbolTable
 from printnodesvisitor import PrintNodesVisitor
 from astvisitor import ASTVisitor
 
+test = True
 class SemanticAnalysisVisitor(ASTVisitor):
     def __init__(self):
         super().__init__()
@@ -23,13 +24,15 @@ class SemanticAnalysisVisitor(ASTVisitor):
     def visit_assignment_node(self, ass_node):
         self.node_count += 1     
         identifier = ass_node.id.accept(self)
+        if test & (identifier == None): raise Exception('error None identifier') # test
         exprType = ass_node.expr.accept(self)
-        symbolType = symboltable.lookupGetType(identifier)
+        symbolType = self.symboltable.lookupGetType(identifier)
         if symbolType != exprType: raise Exception("TypeConflictError: Expression type does not match with variable type.")
 
     visit_variable_node = lambda self, var_node: self.visit_identifier_node(var_node) # alias
     def visit_identifier_node(self, var_node):
         self.node_count += 1
+        if test & (var_node.lexeme == None): raise Exception('error None identifier') # test
         return var_node.lexeme
         '''
         cannot call a lookup function here since lookup function may differ if a new variable or function is declared or in the case of an assignment
@@ -40,7 +43,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_block_node(self, block_node):
         self.node_count += 1
-        symboltable.push()
+        self.symboltable.push()
         for st in block_node.stmts:
             st.accept(self)
 
@@ -148,7 +151,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
         print('\t' * self.tab_count, "FunctionCall node => ")
         self.inc_tab_count()
         identifier = functioncall_node.identifier.accept(self)
-        symbolType = symboltable.lookupGetType(identifier)
+        symbolType = self.symboltable.lookupGetType(identifier)
         if (symbolType == None) | (symbolType != 'function'): raise Exception("Function does not exist") # did not implement function/method signature in type check
         if functioncall_node.actualParams != None: functioncall_node.actualParams.accept(self)
         self.dec_tab_count()
@@ -197,8 +200,8 @@ class SemanticAnalysisVisitor(ASTVisitor):
         identifier = variabledecl_node.identifier.accept(self)
         symbolType = variabledecl_node.variableDeclSuffix.accept(self)
 
-        if symboltable.lookupCurrentFrame(identifier) != None: raise Exception(f'Variable or function {identifier} already initialised')
-        symboltable.insert(identifier, symbolType)
+        if self.symboltable.lookupCurrentFrame(identifier) != None: raise Exception(f'Variable or function {identifier} already initialised')
+        self.symboltable.insert(identifier, symbolType)
 
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
@@ -285,7 +288,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
         if node.integerLiteral != None: node.integerLiteral.accept(self)
         self.dec_tab_count()
 
-        symboltable.insert(name, symbolType)
+        self.symboltable.insert(name, symbolType)
         return symbolType
 
     def visit_formalparams_node(self, node):
@@ -301,11 +304,11 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_functiondecl_node(self, node):
         self.node_count += 1
-        symboltable.push()
+        self.symboltable.push()
         print('\t' * self.tab_count, "FunctionDecl node => ")
         self.inc_tab_count()
         name = node.identifier.accept(self)
-        if symboltable.lookupCurrentFrame(name) != None: raise Exception(f'{name} already declared.')
+        if self.symboltable.lookupCurrentFrame(name) != None: raise Exception(f'{name} already declared.')
         if node.formalParams != None: formalParamsTypes = node.formalParams.accept(self) # symbol inserts in formalParams
         node.typeLiteral.accept(self)
         if node.integerLiteral != None: node.integerLiteral.accept(self)
@@ -313,13 +316,13 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.dec_tab_count()
         
         symbolType = f'function {formalParamsTypes} -> {returnType}'
-        symboltable.insert(name, symbolType)
+        self.symboltable.insert(name, symbolType)
 
 
 if __name__ == '__main__':
     # parser driver code
     #parser = Parser("x=23;")
-    parser = Parser("x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
+    parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
 ##    parser = Parser("x = hello();")
 ##    parser.test = True # test
 ##    parser = Parser("x=   23 ; y=  100;")
@@ -330,10 +333,10 @@ if __name__ == '__main__':
 
     # semantic analysis (visitor)
     semantic_visitor = SemanticAnalysisVisitor()
-    parser.ASTroot.accept(print_visitor)
+    parser.ASTroot.accept(semantic_visitor)
 
 
 
     # print nodes visitor
-    print_visitor = ast.PrintNodesVisitor()
+    print_visitor = PrintNodesVisitor()
     parser.ASTroot.accept(print_visitor)

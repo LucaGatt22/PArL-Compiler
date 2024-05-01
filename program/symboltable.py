@@ -10,9 +10,9 @@ class SymbolTable:
 
     def insert(self, name:str, typeSymbol, value=None):
         self.currentFrame[name] = {
-            'name': name
+            'name': name,
             'type': typeSymbol, # check type before update with possible error to user
-            'value': value
+            'value': value,
         } # introduced a new type 'function' for identifiers of functions. Introduced function/method signature
 
     def lookupCurrentFrame(self, name):
