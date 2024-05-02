@@ -4,12 +4,19 @@ astnodes contains all the astnodes and the PrintVisitor class with the respectiv
 parser: parses the tokens created by the lexer and creates the AST node objects with the tokens provided by the lexer.
 
 Every Python file is constructed closely to the e-BNF provided in the assginment question.
-letter, digit and hex are the character categories handled by Lexer but not by Parser. The lexer produces tokens such as identifiers, keywords, values and operators. The parser parses the tokens which are created for statements for Type (ASTTypeNode) onwards (excluding the identifier), and tokens representing characters such as the semicolon and the colon.
+letter, digit and hex are the character categories handled by Lexer but not by Parser.
 
-The list of token types is in the TokenType class of lexerassignments.py
-
-Lexer - creates tokens
-Parser - generates AST (Abstract Syntax Tree)
+Lexer
+ - creates tokens with the token types declared in the TokenType class of lexerassignments.py.
+ - The lexer produces tokens such as identifiers, keywords, values and operators.
+Parser
+ - generates AST (Abstract Syntax Tree)
+ - The parser parses the tokens which are created for the eBNF statements Type (ASTTypeNode) onwards (excluding the identifier), and tokens representing characters such as the semicolon and the colon.
+astnodes - The structure of the AST is determined ASTNode classes in `astnodes.py`. Each AST node class has an:
+ - __init__() function to hold the name of the class and its children (other AST nodes)
+   - some classes require two __init__() functions to implement the option shown by the eBNF statement
+ - function such as addLiteral() or addTerm() which adds a node to a list of nodes found in the class, as sometimes a child of a node is a list of nodes (instead of a node).
+ - accept() function which links to the corresponding visit_node function.
 PrintNodesVisitor - traverses through AST and prints the details of the nodes to have a visual of the tree.
 SemanticAnalysis - This is a visitor, meaning it traverses through AST, this further validating program through type and scope checking.
  - Each AST node has a corresponding visit_node() function. For example, an assignment node has the visit_assignment_node().
@@ -21,6 +28,7 @@ SymbolTable - Now that the symbol table is mentioned, the symbol table interacts
  - The implemented symbol table is still has a stack of frames, but has also the currentFrame. The current frame is not found in the stack. Opening a scope means adding the current frame to the top of the stack and emptying `currentFrame` for the new scope. Similarly, popping means removing the removing the top frame in the stack and placing it in `currentFrame` while discarding its old contents.
  - Although the symbol table has the stack functions (push and pop), it has also lookup functions (in current frame and in all frames), an insert() and an update() function.
 CodeGenerationVisitor - It generates PArIR instrucions based on the PArL program given. **Not implemented yet.**
+ - Address a location in the stack using [symbolIndex:frameIndex]
 
 ## More points on semantic SemanticAnalysis
 WriteStatement
