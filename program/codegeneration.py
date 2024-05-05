@@ -7,7 +7,7 @@ from semanticanalysis import SemanticAnalysisVisitor
 class CodeGenerationVisitor:
     def __init__(self):
         super().__init__()
-        self.name = "Semantic Analysis Visitor"
+        self.name = "Code Generation Visitor"
         self.symboltable = SymbolTable()
         
     def appendToFile(self, data):
@@ -24,9 +24,12 @@ class CodeGenerationVisitor:
     def visit_assignment_node(self, ass_node):
         self.node_count += 1     
         identifier = ass_node.id.accept(self)
-        if test & (identifier == None): raise Exception('error None identifier') # test
         exprType = ass_node.expr.accept(self)
-        symbolType = self.symboltable.lookupGetType(identifier)
+        # appendToFile(f'push {exprValue}') # c
+        symbolValueAddr = self.symboltable.lookupGetValueAddr(identifier)
+        appendToFile(f'push {symbolValueAddr.symbolIndex}') # b
+        appendToFile(f'push {symbolValueAddr.frameIndex}') # a
+        appendToFile('st')
         if symbolType != exprType: raise Exception("TypeConflictError: Expression type does not match with variable type.")
 
     visit_variable_node = lambda self, var_node: self.visit_identifier_node(var_node) # alias
@@ -47,8 +50,10 @@ class CodeGenerationVisitor:
         appendToFile('oframe')
         self.symboltable.push()
         for st in block_node.stmts:
-            st.accept(self)
+            returnValue = st.accept(self)
+            if returnValue != None: break
         appendToFile('cframe')
+        return returnValue
 
 
     def visit_program_node(self, program_node):

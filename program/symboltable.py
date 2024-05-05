@@ -12,7 +12,10 @@ class SymbolTable:
         self.currentFrame[name] = {
             'name': name,
             'type': typeSymbol, # check type before update with possible error to user
-            'value': value,
+            'valueAddr': { # '[{len(currentFrame)}:{len(frames)}]' # symbolIndex:frameIndex
+                'symbolIndex': len(currentFrame)
+                'frameIndex': len(frames)
+            }
         } # introduced a new type 'function' for identifiers of functions. Introduced function/method signature
 
     def lookupCurrentFrame(self, name):
@@ -28,6 +31,9 @@ class SymbolTable:
     def lookupGetType(self, name):
         symbol = self.lookup(name)
         return symbol.get('type')
+    def lookupGetValueAddr(self, name:str):
+        symbol = self.lookup(name)
+        return symbol['valueAddr']
 
     # pop() - list has pop() function already
     def pop(self):

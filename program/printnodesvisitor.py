@@ -1,4 +1,4 @@
-from astvisitor import ASTVisitor
+from astvisitor import *
 
 class PrintNodesVisitor(ASTVisitor):
     def __init__(self):
