@@ -190,20 +190,24 @@ class CodeGenerationVisitor:
         exprType = self.visit_general(node.childNode, "Factor", 'parent')
         return exprType
 
-    def visit_term_node(self, node):
-        exprType = self.visit_oneListAttribute(node.nodes, 'Term')
-        return exprType
-
-    def visit_simpleexpr_node(self, node):
-        exprType = self.visit_oneListAttribute(node.nodes, 'SimpleExpr')
-        return exprType
-
-    def visit_expr_node(self, node): # will not work
-        # exprType = self.visit_oneListAttribute(node.nodes, 'Expr')
+    def visit_node_list(self, node):
         node.nodes[0].accept(self) # operand
         for operatorChildIndex in range(1,len(node.nodes),2): # iterate over each pair of an operand and an operator
             node.nodes[operatorChildIndex+1].accept(self) # operand
             node.nodes[operatorChildIndex].accept(self) # operator
+    def visit_term_node(self, node):
+        # exprType = self.visit_oneListAttribute(node.nodes, 'Term')
+        # return exprType
+        self.visit_node_list(node)
+
+    def visit_simpleexpr_node(self, node):
+        # exprType = self.visit_oneListAttribute(node.nodes, 'SimpleExpr')
+        # return exprType
+        self.visit_node_list(node)
+
+    def visit_expr_node(self, node): # will not work
+        # exprType = self.visit_oneListAttribute(node.nodes, 'Expr')
+        self.visit_node_list(node)
 
         # as clause
         if node.typeLiteral != None:
