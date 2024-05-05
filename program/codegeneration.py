@@ -198,9 +198,13 @@ class CodeGenerationVisitor:
         exprType = self.visit_oneListAttribute(node.nodes, 'SimpleExpr')
         return exprType
 
-    def visit_expr_node(self, node):
-        exprType = self.visit_oneListAttribute(node.nodes, 'Expr')
-        
+    def visit_expr_node(self, node): # will not work
+        # exprType = self.visit_oneListAttribute(node.nodes, 'Expr')
+        node.nodes[0].accept(self) # operand
+        for operatorChildIndex in range(1,len(node.nodes),2): # iterate over each pair of an operand and an operator
+            node.nodes[operatorChildIndex+1].accept(self) # operand
+            node.nodes[operatorChildIndex].accept(self) # operator
+
         # as clause
         if node.typeLiteral != None:
             self.inc_tab_count()
