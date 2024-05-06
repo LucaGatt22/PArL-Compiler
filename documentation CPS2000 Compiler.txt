@@ -39,4 +39,7 @@ Function
  - signature - A function signature is introduced to specify the function well to type check it.
  - return - A function must have the abilty to return an expression - not tested
 
-##
+Unused PArL and VM commands
+ - The 'min' and 'max' VM commands do not need to be used.
+ - '__clear' does not exist in PaRL's eBNF, so I cannot include the use of the VM's 'clear' command.
+ - Since I can restrict my language to work only with +ve integers, the unary operator '-' is allowed by the Lexer and Parser but disregarded in code generation (CodeGenerationVisitor).

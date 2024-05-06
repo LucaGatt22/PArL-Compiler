@@ -134,6 +134,7 @@ class CodeGenerationVisitor:
 
     def visit_padrandi_node(self, node):
         self.visit_general(node.value, "PadRandI", 'parent')
+        appendToFile('irnd')
 
     def visit_identifierarray_node(self, identifierarray_node):
         self.node_count += 1
@@ -145,10 +146,28 @@ class CodeGenerationVisitor:
 
     def visit_multiop_node(self, multiop_node):
         self.visit_general(multiop_node.operationValue, "MultiplicativeOp", 'value')
+
+        if multiop_node.operationValue == '*': appendToFile('mul')
+        elif multiop_node.operationValue == '/': appendToFile('div')
+        elif multiop_node.operationValue == 'and': appendToFile('and')
     def visit_addop_node(self, addop_node):
         self.visit_general(addop_node.operationValue, "AdditiveOp", 'value')
-    def visit_relop_node(self, addop_node):
+
+        if addop_node.operationValue == '+': appendToFile('add')
+        elif addop_node.operationValue == '-': appendToFile('sub')
+        elif addop_node.operationValue == 'or': appendToFile('or')
+    def visit_relop_node(self, relop_node):
         self.visit_general(relop_node.operationValue, "RelationalOp", 'value')
+
+        if relop_node.operationValue == '<': appendToFile('lt')
+        elif relop_node.operationValue == '>': appendToFile('gt')
+        elif relop_node.operationValue == '==': appendToFile('eq')
+        elif relop_node.operationValue == '!=':
+            appendToFile('eq')
+            appendToFile('not')
+        elif relop_node.operationValue == '<=': appendToFile('le')
+        elif relop_node.operationValue == '>=': appendToFile('ge')
+
 
     def visit_oneListAttribute(self, childNodes, nodeName:str):
         self.node_count += 1
@@ -182,8 +201,12 @@ class CodeGenerationVisitor:
         print('\t' * self.tab_count, str(nodeName)+"Unary node => ")
         self.inc_tab_count()
         print('\t' * self.tab_count, "Unary operator::", node.unaryOp)
-        exprType = node.expr.accept(self)
+        exprType = node.expr.accept(self) # expr before VM's 'not' command
         self.dec_tab_count()
+
+        if node.unaryOp == 'not': appendToFile('not')
+        elif node.unaryOp == '-': raise Exception('- UnaryOperator is excluded in code generation.')
+
         return exprType
 
     def visit_factor_node(self, node):
