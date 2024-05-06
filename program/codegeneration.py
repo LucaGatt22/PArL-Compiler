@@ -186,6 +186,7 @@ class CodeGenerationVisitor:
         identifier = functioncall_node.identifier.accept(self)
         symbolType = self.symboltable.lookupGetType(identifier)
         appendToFile(f'push .{identifier}')
+        appendToFile('call')
         if functioncall_node.actualParams != None: functioncall_node.actualParams.accept(self)
         self.dec_tab_count()
 
