@@ -162,9 +162,9 @@ class CodeGenerationVisitor:
         if relop_node.operationValue == '<': appendToFile('lt')
         elif relop_node.operationValue == '>': appendToFile('gt')
         elif relop_node.operationValue == '==': appendToFile('eq')
-        elif relop_node.operationValue == '!=':
+        elif relop_node.operationValue == '!=': # same as inversion of the boolean returned by ==
             appendToFile('eq')
-            appendToFile('not')
+            appendToFile('not') # inversion of boolean i.e. (0 to 1) and (1 to 0)
         elif relop_node.operationValue == '<=': appendToFile('le')
         elif relop_node.operationValue == '>=': appendToFile('ge')
 
