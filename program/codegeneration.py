@@ -190,8 +190,6 @@ class CodeGenerationVisitor:
         if functioncall_node.actualParams != None: functioncall_node.actualParams.accept(self)
         self.dec_tab_count()
 
-        appendToFile('ret')
-
     def visit_subexpr_node(self, subexpr_node):
         exprType = self.visit_general(subexpr_node.expr, "SubExpr", 'parent')
         return exprType
@@ -214,7 +212,7 @@ class CodeGenerationVisitor:
         exprType = self.visit_general(node.childNode, "Factor", 'parent')
         return exprType
 
-    def visit_node_list(self, node):
+    def visit_node_list(self, node): # implements visit_node functions of term, simpleexpr, and expr
         node.nodes[0].accept(self) # operand
         for operatorChildIndex in range(1,len(node.nodes),2): # iterate over each pair of an operand and an operator
             node.nodes[operatorChildIndex+1].accept(self) # operand
@@ -298,15 +296,20 @@ class CodeGenerationVisitor:
 
     def visit_rtrnstatement_node(self, node):
         exprType = self.visit_requireexpr_node(node, "RtrnStatement")
+        appendToFile('ret')
         return exprType
 
-    def visit_ifstatement_node(self, node):
+    def visit_ifstatement_node(self, node): # work in progress
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"IfStatement node => ")
         self.inc_tab_count()
         exprType = node.expr.accept(self)
-        node.blockIf.accept(self)
-        if node.blockElse != None: node.blockElse.accept(self)
+        # compare using expr
+        linesNumIf = linesNumElse = raise Expression("FATAL ERROR - do not know how to get number of lines of if or else block")
+        appendToFile(f'push #PC+{linesNum+1}\ncjmp') # +1 to jump over (exclude) the jump statement found after `blockIf`
+        returnValue = node.blockIf.accept(self)
+        appendToFile(f'push #PC+{linesNum}\njmp')
+        if node.blockElse != None: returnValue = node.blockElse.accept(self)
         self.dec_tab_count()
         
         if exprType != 'bool': raise Exception('Expected bool in IfStatement')
@@ -366,7 +369,7 @@ class CodeGenerationVisitor:
         if node.formalParams != None: formalParamsTypes = node.formalParams.accept(self) # symbol inserts in formalParams
         node.typeLiteral.accept(self)
         if node.integerLiteral != None: node.integerLiteral.accept(self)
-        returnType = node.block.accept(self)
+        returnValue = node.block.accept(self)
         self.dec_tab_count()
         
         symbolType = f'function {formalParamsTypes} -> {returnType}'

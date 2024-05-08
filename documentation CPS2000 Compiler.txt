@@ -9,6 +9,7 @@ letter, digit and hex are the character categories handled by Lexer but not by P
 Lexer
  - creates tokens with the token types declared in the TokenType class of lexerassignments.py.
  - The lexer produces tokens such as identifiers, keywords, values and operators.
+ - Comments are not allowed. If I were to allow comments, I must change the lexer to remove any comments. These are recognised by the // and /* ... */ symbols.
 Parser
  - generates AST (Abstract Syntax Tree)
  - The parser parses the tokens which are created for the eBNF statements Type (ASTTypeNode) onwards (excluding the identifier), and tokens representing characters such as the semicolon and the colon.
@@ -38,8 +39,10 @@ WriteStatement
 Function
  - signature - A function signature is introduced to specify the function well to type check it.
  - return - A function must have the abilty to return an expression - not tested
+ - No jumps are required to go from a function to another since this is done by `call` and `ret`.
 
 Unused PArL and VM commands
  - The 'min' and 'max' VM commands do not need to be used.
  - '__clear' does not exist in PaRL's eBNF, so I cannot include the use of the VM's 'clear' command.
  - Since I can restrict my language to work only with +ve integers, the unary operator '-' is allowed by the Lexer and Parser but disregarded in code generation (CodeGenerationVisitor).
+
