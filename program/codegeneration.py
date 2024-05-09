@@ -373,7 +373,7 @@ class CodeGenerationVisitor:
         if self.symboltable.lookupCurrentFrame(name) != None: raise Exception(f'{name} already declared.')
         self.appendToFile(f'\n.{name}') # newline to seperate between functions
         if node.formalParams != None: formalParamsTypes = node.formalParams.accept(self) # symbol inserts in formalParams
-        node.typeLiteral.accept(self)
+        returnType = node.typeLiteral.accept(self)
         if node.integerLiteral != None: node.integerLiteral.accept(self)
         returnValue = node.block.accept(self)
         self.dec_tab_count()
