@@ -1,4 +1,4 @@
-split into lexer, astnodes and parser
+dsplit into lexer, astnodes and parser
 lexer: has character categories and using them, identifies the tokens of the code string provided.
 astnodes contains all the astnodes and the PrintVisitor class with the respective visit node functions
 parser: parses the tokens created by the lexer and creates the AST node objects with the tokens provided by the lexer.

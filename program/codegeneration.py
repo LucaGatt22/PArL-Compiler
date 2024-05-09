@@ -9,6 +9,8 @@ class CodeGenerationVisitor:
         super().__init__()
         self.name = "Code Generation Visitor"
         self.symboltable = SymbolTable()
+        self.node_count = 0
+        self.block_count = 0
         
     def appendToFile(self, data):
         with open('generatedcode.parir', 'a') as file:
@@ -46,8 +48,10 @@ class CodeGenerationVisitor:
 
     def visit_block_node(self, block_node):
         self.node_count += 1
-        appendToFile(f'push {len(block_node.stmts)}')
-        appendToFile('oframe')
+        self.block_count += 1 # to identify block function name, such as block1
+        # appendToFile(f'push {len(block_node.stmts)}') # length of ParL statements does not equal to PArIR statements
+        appendToFile('push 0') # space is allocated one space at a time whenever an 'st' (store) is found
+        appendToFile('oframe') # oframe and cframe are supposed to be used for memory stack
         self.symboltable.push()
         for st in block_node.stmts:
             returnValue = st.accept(self)
@@ -239,15 +243,23 @@ class CodeGenerationVisitor:
             return node.typeLiteral
         return exprType
 
+    def genCodeInsertVar(self, identifier, symbolType):
+        appendToFile('alloc 1') # allocate space for a new element in current frame 
+        self.symboltable.insert(identifier, symbolType)
+        symbolValueAddr = self.symboltable.lookupGetValueAddr(identifier)
+        appendToFile(f'push {symbolValueAddr.symbolIndex}') # b
+        appendToFile(f'push {symbolValueAddr.frameIndex}') # a
+        appendToFile('st')
 
     def visit_variabledecl_node(self, variabledecl_node):
         self.node_count += 1
         
         identifier = variabledecl_node.identifier.accept(self)
         symbolType = variabledecl_node.variableDeclSuffix.accept(self)
-
+        
         if self.symboltable.lookupCurrentFrame(identifier) != None: raise Exception(f'Variable or function {identifier} already initialised')
-        self.symboltable.insert(identifier, symbolType)
+        
+        self.genCodeInsertVar(identifier, symbolType)
 
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
@@ -305,7 +317,8 @@ class CodeGenerationVisitor:
         self.inc_tab_count()
         exprType = node.expr.accept(self)
         # compare using expr
-        linesNumIf = linesNumElse = raise Expression("FATAL ERROR - do not know how to get number of lines of if or else block")
+        linesNumIf = linesNumElse = None
+        if (linesNumIf == linesNumElse) & (linesNumIf == None): raise Exception("FATAL ERROR - do not know how to get number of lines of if or else block")
         appendToFile(f'push #PC+{linesNum+1}\ncjmp') # +1 to jump over (exclude) the jump statement found after `blockIf`
         returnValue = node.blockIf.accept(self)
         appendToFile(f'push #PC+{linesNum}\njmp')
@@ -336,28 +349,30 @@ class CodeGenerationVisitor:
 
         if exprType != 'bool': raise Exception('Expected bool in WhileStatement')
 
+    
     def visit_formalparam_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"FormalParam node => ")
         self.inc_tab_count()
-        name = node.identifier.accept(self)
+        identifier = node.identifier.accept(self)
         symbolType = node.typeLiteral.accept(self)
         if node.integerLiteral != None: node.integerLiteral.accept(self)
         self.dec_tab_count()
 
-        self.symboltable.insert(name, symbolType)
+        self.genCodeInsertVar(identifier, symbolType)
+
         return symbolType
+        
 
     def visit_formalparams_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"FormalParams node => ")
         self.inc_tab_count()
-        formalParamsTypes = '<'
+        self.appendToFile(f'push {len(node.formalparams)}')
+        self.appendToFile(f'oframe')
         for formalparam in node.formalparams:
-            formalParamsTypes += str(formalparam.accept(self)) + ', '
-        formalParamsTypes = formalParamsTypes[:-2] + '>'
+            formalparam.accept(self)
         self.dec_tab_count()
-        return formalParamsTypes
 
     def visit_functiondecl_node(self, node):
         self.node_count += 1
@@ -366,14 +381,16 @@ class CodeGenerationVisitor:
         self.inc_tab_count()
         name = node.identifier.accept(self)
         if self.symboltable.lookupCurrentFrame(name) != None: raise Exception(f'{name} already declared.')
+        self.appendToFile(f'\n.{name}') # newline to seperate between functions
         if node.formalParams != None: formalParamsTypes = node.formalParams.accept(self) # symbol inserts in formalParams
         node.typeLiteral.accept(self)
         if node.integerLiteral != None: node.integerLiteral.accept(self)
         returnValue = node.block.accept(self)
         self.dec_tab_count()
         
-        symbolType = f'function {formalParamsTypes} -> {returnType}'
+        symbolType = f'function {formalParamsTypes} -> {returnType}' # the type of a function is 'function' together with its signature
         self.symboltable.insert(name, symbolType)
+        self.appendToFile('cframe') # close frame opened in `visit_formalparams_node()`
 
 
 if __name__ == '__main__':

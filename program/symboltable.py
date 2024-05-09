@@ -8,12 +8,12 @@ class SymbolTable:
         self.frames.append(currentFrame)
         self.currentFrame = {} # reinitialise
 
-    def insert(self, name:str, typeSymbol, value=None):
+    def insert(self, name:str, typeSymbol):#, value=None):
         self.currentFrame[name] = {
             'name': name,
             'type': typeSymbol, # check type before update with possible error to user
             'valueAddr': { # '[{len(currentFrame)}:{len(frames)}]' # symbolIndex:frameIndex
-                'symbolIndex': len(currentFrame)
+                'symbolIndex': len(currentFrame),
                 'frameIndex': len(frames)
             }
         } # introduced a new type 'function' for identifiers of functions. Introduced function/method signature
