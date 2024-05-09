@@ -26,13 +26,13 @@ class CodeGenerationVisitor:
     def visit_assignment_node(self, ass_node):
         self.node_count += 1     
         identifier = ass_node.id.accept(self)
-        exprType = ass_node.expr.accept(self)
+        ass_node.expr.accept(self)
         # appendToFile(f'push {exprValue}') # c
         symbolValueAddr = self.symboltable.lookupGetValueAddr(identifier)
         appendToFile(f'push {symbolValueAddr.symbolIndex}') # b
         appendToFile(f'push {symbolValueAddr.frameIndex}') # a
         appendToFile('st')
-        if symbolType != exprType: raise Exception("TypeConflictError: Expression type does not match with variable type.")
+        
 
     visit_variable_node = lambda self, var_node: self.visit_identifier_node(var_node) # alias
     def visit_identifier_node(self, var_node):
@@ -82,9 +82,8 @@ class CodeGenerationVisitor:
         self.node_count += 1
         print('\t' * self.tab_count, "Literal node => ")
         self.inc_tab_count()
-        valueType = literal_node.literal.accept(self)
+        literal_node.literal.accept(self)
         self.dec_tab_count()
-        return valueType
 
 
     '''
@@ -100,16 +99,16 @@ class CodeGenerationVisitor:
         if isParentNode_Value_Cmd == 'parent':
             print('\t' * self.tab_count, nodeNameStr+" node => ")
             self.inc_tab_count()
-            exprType = attrNode.accept(self) # Should it be called exprType?
+            attrNode.accept(self) # Should it be called exprType?
             self.dec_tab_count()
-            return exprType
+            
         elif isParentNode_Value_Cmd == 'value':
             print('\t' * self.tab_count, nodeNameStr+" value::", attrNode)
         elif isParentNode_Value_Cmd == 'cmd':
             print('\t' * self.tab_count, nodeNameStr+" command", attrNode)
         else: print('ERROR: '+str(isParentNode_Value_Cmd)+' does not exist.')
         
-    def visit_bool_node(self, bool_node): # ?
+    def visit_bool_node(self, bool_node):
         self.visit_general(bool_node.value, "Bool", 'value')
         return 'bool'
     def visit_float_node(self, float_node):
@@ -133,7 +132,6 @@ class CodeGenerationVisitor:
         self.inc_tab_count()
         padread_node.exprX.accept(self)
         padread_node.exprY.accept(self)
-        if (exprXType != 'int') | (exprYType != 'int'): raise Exception("Expected int in __read statement.")
         self.dec_tab_count()
 
     def visit_padrandi_node(self, node):
@@ -188,15 +186,13 @@ class CodeGenerationVisitor:
         print('\t' * self.tab_count, "FunctionCall node => ")
         self.inc_tab_count()
         identifier = functioncall_node.identifier.accept(self)
-        symbolType = self.symboltable.lookupGetType(identifier)
         appendToFile(f'push .{identifier}')
         appendToFile('call')
         if functioncall_node.actualParams != None: functioncall_node.actualParams.accept(self)
         self.dec_tab_count()
 
     def visit_subexpr_node(self, subexpr_node):
-        exprType = self.visit_general(subexpr_node.expr, "SubExpr", 'parent')
-        return exprType
+        self.visit_general(subexpr_node.expr, "SubExpr", 'parent')
 
     def visit_unary_node(self, node):
         # commented code assumes '-' and 'not' are the same # self.visit_general(node.expr, "Unary", 'parent')
@@ -204,17 +200,17 @@ class CodeGenerationVisitor:
         print('\t' * self.tab_count, str(nodeName)+"Unary node => ")
         self.inc_tab_count()
         print('\t' * self.tab_count, "Unary operator::", node.unaryOp)
-        exprType = node.expr.accept(self) # expr before VM's 'not' command
+        node.expr.accept(self) # expr before VM's 'not' command
         self.dec_tab_count()
 
         if node.unaryOp == 'not': appendToFile('not')
         elif node.unaryOp == '-': raise Exception('- UnaryOperator is excluded in code generation.')
 
-        return exprType
+        
 
     def visit_factor_node(self, node):
-        exprType = self.visit_general(node.childNode, "Factor", 'parent')
-        return exprType
+        self.visit_general(node.childNode, "Factor", 'parent')
+        
 
     def visit_node_list(self, node): # implements visit_node functions of term, simpleexpr, and expr
         node.nodes[0].accept(self) # operand
@@ -222,17 +218,17 @@ class CodeGenerationVisitor:
             node.nodes[operatorChildIndex+1].accept(self) # operand
             node.nodes[operatorChildIndex].accept(self) # operator
     def visit_term_node(self, node):
-        # exprType = self.visit_oneListAttribute(node.nodes, 'Term')
-        # return exprType
+        # self.visit_oneListAttribute(node.nodes, 'Term')
+        
         self.visit_node_list(node)
 
     def visit_simpleexpr_node(self, node):
-        # exprType = self.visit_oneListAttribute(node.nodes, 'SimpleExpr')
-        # return exprType
+        # self.visit_oneListAttribute(node.nodes, 'SimpleExpr')
+        
         self.visit_node_list(node)
 
     def visit_expr_node(self, node): # will not work
-        # exprType = self.visit_oneListAttribute(node.nodes, 'Expr')
+        # self.visit_oneListAttribute(node.nodes, 'Expr')
         self.visit_node_list(node)
 
         # as clause
@@ -241,7 +237,7 @@ class CodeGenerationVisitor:
             print('\t' * self.tab_count, "Type::", node.typeLiteral)
             self.dec_tab_count()
             return node.typeLiteral
-        return exprType
+        
 
     def genCodeInsertVar(self, identifier, symbolType):
         appendToFile('alloc 1') # allocate space for a new element in current frame 
@@ -267,8 +263,8 @@ class CodeGenerationVisitor:
             node.variableDeclArray.accept()
         except AttributeError: # if variableDeclArray does not exist in the node instance
             symbolType = node.typeLiteral.accept()
-            exprType = node.expr.accept()
-            if symbolType != exprType: raise Exception("TypeConflictError: Expression type does not match with variable type.")
+            node.expr.accept()
+            
             return symbolType
 
     def visit_variabledeclarray_node(self, node):
@@ -284,14 +280,14 @@ class CodeGenerationVisitor:
         self.dec_tab_count()
 
     def visit_requireexpr_node(self, node, nodeName):
-        exprType = self.visit_general(node.expr, nodeName, 'parent')
+        self.visit_general(node.expr, nodeName, 'parent')
         # appendToFile(f'push {node.expr}') # only terminals have push command
-        return exprType
+        
     def visit_printstatement_node(self, node):
-        exprType = self.visit_requireexpr_node(node, "PrintStatement") # can be of any type
+        self.visit_requireexpr_node(node, "PrintStatement") # can be of any type
         appendToFile('print')
     def visit_delaystatement_node(self, node):
-        exprType = self.visit_requireexpr_node(node, "DelayStatement")
+        self.visit_requireexpr_node(node, "DelayStatement")
         appendToFile('delay')
 
     def visit_writestatement_node(self, node):
@@ -307,15 +303,15 @@ class CodeGenerationVisitor:
         else: raise Exception("FATAL ERROR")
 
     def visit_rtrnstatement_node(self, node):
-        exprType = self.visit_requireexpr_node(node, "RtrnStatement")
+        self.visit_requireexpr_node(node, "RtrnStatement")
         appendToFile('ret')
-        return exprType
+        
 
     def visit_ifstatement_node(self, node): # work in progress
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"IfStatement node => ")
         self.inc_tab_count()
-        exprType = node.expr.accept(self)
+        node.expr.accept(self)
         # compare using expr
         linesNumIf = linesNumElse = None
         if (linesNumIf == linesNumElse) & (linesNumIf == None): raise Exception("FATAL ERROR - do not know how to get number of lines of if or else block")
@@ -324,15 +320,13 @@ class CodeGenerationVisitor:
         appendToFile(f'push #PC+{linesNum}\njmp')
         if node.blockElse != None: returnValue = node.blockElse.accept(self)
         self.dec_tab_count()
-        
-        if exprType != 'bool': raise Exception('Expected bool in IfStatement')
 
     def visit_forstatement_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"ForStatement node => ")
         self.inc_tab_count()
         if node.varDec != None: node.varDec.accept(self)
-        exprType = node.expr.accept(self)
+        node.expr.accept(self)
         if node.assignment != None: node.assignment.accept(self)
         node.block.accept(self)
         self.dec_tab_count()
@@ -343,11 +337,9 @@ class CodeGenerationVisitor:
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"WhileStatement node => ")
         self.inc_tab_count()
-        exprType = node.expr.accept(self)
+        node.expr.accept(self)
         node.block.accept(self)
         self.dec_tab_count()
-
-        if exprType != 'bool': raise Exception('Expected bool in WhileStatement')
 
     
     def visit_formalparam_node(self, node):
@@ -360,8 +352,6 @@ class CodeGenerationVisitor:
         self.dec_tab_count()
 
         self.genCodeInsertVar(identifier, symbolType)
-
-        return symbolType
         
 
     def visit_formalparams_node(self, node):
