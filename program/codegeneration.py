@@ -4,11 +4,12 @@ from printnodesvisitor import PrintNodesVisitor
 from astvisitor import ASTVisitor
 from semanticanalysis import SemanticAnalysisVisitor
 
-class CodeGenerationVisitor:
+class CodeGenerationVisitor(ASTVisitor):
     def __init__(self):
         super().__init__()
         self.name = "Code Generation Visitor"
         self.symboltable = SymbolTable()
+        self.instructions = []
         self.node_count = 0
         self.block_count = 0
         
@@ -17,21 +18,28 @@ class CodeGenerationVisitor:
             file.write(data + '\n')
         # print("Data appended successfully.")
 
+    def storeInstructionsInFile(self, data):
+        pass
+
+    def appendInstruction(self, instruction):
+        self.instructions.append(instruction)
+        # self.appendInstruction(instruction)
+
     def visit_integer_node(self, int_node):
         self.node_count += 1
         print('\t' * self.tab_count, "Integer value::", int_node.value)
-        appendToFile(f'push {int_node.value}')
+        self.appendInstruction(f'push {int_node.value}')
         return 'int'
 
     def visit_assignment_node(self, ass_node):
         self.node_count += 1     
         identifier = ass_node.id.accept(self)
         ass_node.expr.accept(self)
-        # appendToFile(f'push {exprValue}') # c
+        # self.appendInstruction(f'push {exprValue}') # c
         symbolValueAddr = self.symboltable.lookupGetValueAddr(identifier)
-        appendToFile(f'push {symbolValueAddr.symbolIndex}') # b
-        appendToFile(f'push {symbolValueAddr.frameIndex}') # a
-        appendToFile('st')
+        self.appendInstruction(f'push {symbolValueAddr.symbolIndex}') # b
+        self.appendInstruction(f'push {symbolValueAddr.frameIndex}') # a
+        self.appendInstruction('st')
         
 
     visit_variable_node = lambda self, var_node: self.visit_identifier_node(var_node) # alias
@@ -49,14 +57,14 @@ class CodeGenerationVisitor:
     def visit_block_node(self, block_node):
         self.node_count += 1
         self.block_count += 1 # to identify block function name, such as block1
-        # appendToFile(f'push {len(block_node.stmts)}') # length of ParL statements does not equal to PArIR statements
-        appendToFile('push 0') # space is allocated one space at a time whenever an 'st' (store) is found
-        appendToFile('oframe') # oframe and cframe are supposed to be used for memory stack
+        # self.appendInstruction(f'push {len(block_node.stmts)}') # length of ParL statements does not equal to PArIR statements
+        self.appendInstruction('push 0') # space is allocated one space at a time whenever an 'st' (store) is found
+        self.appendInstruction('oframe') # oframe and cframe are supposed to be used for memory stack
         self.symboltable.push()
         for st in block_node.stmts:
             returnValue = st.accept(self)
             if returnValue != None: break
-        appendToFile('cframe')
+        self.appendInstruction('cframe')
         return returnValue
 
 
@@ -65,10 +73,10 @@ class CodeGenerationVisitor:
         print('\t' * self.tab_count, "Program => ")
         self.inc_tab_count()
         
-        appendToFile('.main')
+        self.appendInstruction('.main')
         for st in program_node.stmts:
             st.accept(self)
-        appendToFile('halt')
+        self.appendInstruction('halt')
         
         self.dec_tab_count()
 
@@ -113,18 +121,18 @@ class CodeGenerationVisitor:
         return 'bool'
     def visit_float_node(self, float_node):
         self.visit_general(float_node.value, "Float", 'value')
-        appendToFile(f'push {float_node.value}')
+        self.appendInstruction(f'push {float_node.value}')
         return 'float'
     def visit_colour_node(self, colour_node):
         self.visit_general(colour_node.value, "Colour", 'value')
-        appendToFile(f'push {colour_node.value}')
+        self.appendInstruction(f'push {colour_node.value}')
         return 'colour'
     def visit_padwidth_node(self):
         self.visit_general(None, "PadWidth", 'cmd')
-        appendToFile('width')
+        self.appendInstruction('width')
     def visit_padheight_node(self):
         self.visit_general(None, "PadHeight", 'cmd')
-        appendToFile('height')
+        self.appendInstruction('height')
 
     def visit_padread_node(self, padread_node):
         self.node_count += 1
@@ -136,7 +144,7 @@ class CodeGenerationVisitor:
 
     def visit_padrandi_node(self, node):
         self.visit_general(node.value, "PadRandI", 'parent')
-        appendToFile('irnd')
+        self.appendInstruction('irnd')
 
     def visit_identifierarray_node(self, identifierarray_node):
         self.node_count += 1
@@ -149,26 +157,26 @@ class CodeGenerationVisitor:
     def visit_multiop_node(self, multiop_node):
         self.visit_general(multiop_node.operationValue, "MultiplicativeOp", 'value')
 
-        if multiop_node.operationValue == '*': appendToFile('mul')
-        elif multiop_node.operationValue == '/': appendToFile('div')
-        elif multiop_node.operationValue == 'and': appendToFile('and')
+        if multiop_node.operationValue == '*': self.appendInstruction('mul')
+        elif multiop_node.operationValue == '/': self.appendInstruction('div')
+        elif multiop_node.operationValue == 'and': self.appendInstruction('and')
     def visit_addop_node(self, addop_node):
         self.visit_general(addop_node.operationValue, "AdditiveOp", 'value')
 
-        if addop_node.operationValue == '+': appendToFile('add')
-        elif addop_node.operationValue == '-': appendToFile('sub')
-        elif addop_node.operationValue == 'or': appendToFile('or')
+        if addop_node.operationValue == '+': self.appendInstruction('add')
+        elif addop_node.operationValue == '-': self.appendInstruction('sub')
+        elif addop_node.operationValue == 'or': self.appendInstruction('or')
     def visit_relop_node(self, relop_node):
         self.visit_general(relop_node.operationValue, "RelationalOp", 'value')
 
-        if relop_node.operationValue == '<': appendToFile('lt')
-        elif relop_node.operationValue == '>': appendToFile('gt')
-        elif relop_node.operationValue == '==': appendToFile('eq')
+        if relop_node.operationValue == '<': self.appendInstruction('lt')
+        elif relop_node.operationValue == '>': self.appendInstruction('gt')
+        elif relop_node.operationValue == '==': self.appendInstruction('eq')
         elif relop_node.operationValue == '!=': # same as inversion of the boolean returned by ==
-            appendToFile('eq')
-            appendToFile('not') # inversion of boolean i.e. (0 to 1) and (1 to 0)
-        elif relop_node.operationValue == '<=': appendToFile('le')
-        elif relop_node.operationValue == '>=': appendToFile('ge')
+            self.appendInstruction('eq')
+            self.appendInstruction('not') # inversion of boolean i.e. (0 to 1) and (1 to 0)
+        elif relop_node.operationValue == '<=': self.appendInstruction('le')
+        elif relop_node.operationValue == '>=': self.appendInstruction('ge')
 
 
     def visit_oneListAttribute(self, childNodes, nodeName:str):
@@ -186,8 +194,8 @@ class CodeGenerationVisitor:
         print('\t' * self.tab_count, "FunctionCall node => ")
         self.inc_tab_count()
         identifier = functioncall_node.identifier.accept(self)
-        appendToFile(f'push .{identifier}')
-        appendToFile('call')
+        self.appendInstruction(f'push .{identifier}')
+        self.appendInstruction('call')
         if functioncall_node.actualParams != None: functioncall_node.actualParams.accept(self)
         self.dec_tab_count()
 
@@ -203,7 +211,7 @@ class CodeGenerationVisitor:
         node.expr.accept(self) # expr before VM's 'not' command
         self.dec_tab_count()
 
-        if node.unaryOp == 'not': appendToFile('not')
+        if node.unaryOp == 'not': self.appendInstruction('not')
         elif node.unaryOp == '-': raise Exception('- UnaryOperator is excluded in code generation.')
 
         
@@ -240,12 +248,12 @@ class CodeGenerationVisitor:
         
 
     def genCodeInsertVar(self, identifier, symbolType):
-        appendToFile('alloc 1') # allocate space for a new element in current frame 
+        self.appendInstruction('alloc 1') # allocate space for a new element in current frame 
         self.symboltable.insert(identifier, symbolType)
         symbolValueAddr = self.symboltable.lookupGetValueAddr(identifier)
-        appendToFile(f'push {symbolValueAddr.symbolIndex}') # b
-        appendToFile(f'push {symbolValueAddr.frameIndex}') # a
-        appendToFile('st')
+        self.appendInstruction(f'push {symbolValueAddr.symbolIndex}') # b
+        self.appendInstruction(f'push {symbolValueAddr.frameIndex}') # a
+        self.appendInstruction('st')
 
     def visit_variabledecl_node(self, variabledecl_node):
         self.node_count += 1
@@ -281,14 +289,14 @@ class CodeGenerationVisitor:
 
     def visit_requireexpr_node(self, node, nodeName):
         self.visit_general(node.expr, nodeName, 'parent')
-        # appendToFile(f'push {node.expr}') # only terminals have push command
+        # self.appendInstruction(f'push {node.expr}') # only terminals have push command
         
     def visit_printstatement_node(self, node):
         self.visit_requireexpr_node(node, "PrintStatement") # can be of any type
-        appendToFile('print')
+        self.appendInstruction('print')
     def visit_delaystatement_node(self, node):
         self.visit_requireexpr_node(node, "DelayStatement")
-        appendToFile('delay')
+        self.appendInstruction('delay')
 
     def visit_writestatement_node(self, node):
         self.node_count += 1
@@ -298,13 +306,13 @@ class CodeGenerationVisitor:
             node.expr.accept()
         self.dec_tab_count()
         
-        if len(node.exprs) == 3: appendToFile('write')
-        elif len(node.exprs) == 5: appendToFile('writebox')
+        if len(node.exprs) == 3: self.appendInstruction('write')
+        elif len(node.exprs) == 5: self.appendInstruction('writebox')
         else: raise Exception("FATAL ERROR")
 
     def visit_rtrnstatement_node(self, node):
         self.visit_requireexpr_node(node, "RtrnStatement")
-        appendToFile('ret')
+        self.appendInstruction('ret')
         
 
     def visit_ifstatement_node(self, node): # work in progress
@@ -315,9 +323,9 @@ class CodeGenerationVisitor:
         # compare using expr
         linesNumIf = linesNumElse = None
         if (linesNumIf == linesNumElse) & (linesNumIf == None): raise Exception("FATAL ERROR - do not know how to get number of lines of if or else block")
-        appendToFile(f'push #PC+{linesNum+1}\ncjmp') # +1 to jump over (exclude) the jump statement found after `blockIf`
+        self.appendInstruction(f'push #PC+{linesNum+1}\ncjmp') # +1 to jump over (exclude) the jump statement found after `blockIf`
         returnValue = node.blockIf.accept(self)
-        appendToFile(f'push #PC+{linesNum}\njmp')
+        self.appendInstruction(f'push #PC+{linesNum}\njmp')
         if node.blockElse != None: returnValue = node.blockElse.accept(self)
         self.dec_tab_count()
 
@@ -358,8 +366,8 @@ class CodeGenerationVisitor:
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"FormalParams node => ")
         self.inc_tab_count()
-        self.appendToFile(f'push {len(node.formalparams)}')
-        self.appendToFile(f'oframe')
+        self.appendInstruction(f'push {len(node.formalparams)}')
+        self.appendInstruction(f'oframe')
         for formalparam in node.formalparams:
             formalparam.accept(self)
         self.dec_tab_count()
@@ -371,7 +379,7 @@ class CodeGenerationVisitor:
         self.inc_tab_count()
         name = node.identifier.accept(self)
         if self.symboltable.lookupCurrentFrame(name) != None: raise Exception(f'{name} already declared.')
-        self.appendToFile(f'\n.{name}') # newline to seperate between functions
+        self.appendInstruction(f'\n.{name}') # newline to seperate between functions
         if node.formalParams != None: formalParamsTypes = node.formalParams.accept(self) # symbol inserts in formalParams
         returnType = node.typeLiteral.accept(self)
         if node.integerLiteral != None: node.integerLiteral.accept(self)
@@ -380,7 +388,7 @@ class CodeGenerationVisitor:
         
         symbolType = f'function {formalParamsTypes} -> {returnType}' # the type of a function is 'function' together with its signature
         self.symboltable.insert(name, symbolType)
-        self.appendToFile('cframe') # close frame opened in `visit_formalparams_node()`
+        self.appendInstruction('cframe') # close frame opened in `visit_formalparams_node()`
 
 
 if __name__ == '__main__':
