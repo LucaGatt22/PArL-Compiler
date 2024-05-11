@@ -30,6 +30,7 @@ SymbolTable - Now that the symbol table is mentioned, the symbol table interacts
  - Although the symbol table has the stack functions (push and pop), it has also lookup functions (in current frame and in all frames), an insert() and an update() function.
 CodeGenerationVisitor - It generates PArIR instrucions based on the PArL program given. **Not implemented yet.**
  - Address a location in the stack using [symbolIndex:frameIndex]
+ - Started with one-by-one inputting of transactions in the generated code file, changed to a global instructions list and changed again to having each visit_node() function return its instructions to the parent node. This is done to be able to do function declaration and if statements. For example, to determine the number of lines to jump the if block, the instructions of the if block must be returned before generating the instructions, while keeping the overall correct chronology of instructions. By chronology, it is meant that 'cjmp' must still come before the if block.
 
 ## More points on semantic SemanticAnalysis
 WriteStatement

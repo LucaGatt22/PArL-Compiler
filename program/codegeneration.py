@@ -18,18 +18,24 @@ class CodeGenerationVisitor(ASTVisitor):
             file.write(data + '\n')
         # print("Data appended successfully.")
 
-    def storeInstructionsInFile(self, data):
-        pass
+    def storeInstructionsInFile(self, instructions):
+        for instruction in instructions:
+            self.appendToFile(instruction)
 
     def appendInstruction(self, instruction):
         self.instructions.append(instruction)
         # self.appendInstruction(instruction)
 
+    def appendBlockInstructionsToParent(parentInstructions, blockInstructions):
+        for instruction in blockInstructions:
+            appendInstruction(instruction)
+
     def visit_integer_node(self, int_node):
         self.node_count += 1
         print('\t' * self.tab_count, "Integer value::", int_node.value)
-        self.appendInstruction(f'push {int_node.value}')
-        return 'int'
+        instruction = f'push {int_node.value}'
+        self.appendInstruction(instruction)
+        return instruction
 
     def visit_assignment_node(self, ass_node):
         self.node_count += 1     
@@ -40,6 +46,12 @@ class CodeGenerationVisitor(ASTVisitor):
         self.appendInstruction(f'push {symbolValueAddr.symbolIndex}') # b
         self.appendInstruction(f'push {symbolValueAddr.frameIndex}') # a
         self.appendInstruction('st')
+
+        return [
+            f'push {symbolValueAddr.symbolIndex}',
+            f'push {symbolValueAddr.frameIndex}',
+            'st'
+        ]
         
 
     visit_variable_node = lambda self, var_node: self.visit_identifier_node(var_node) # alias
@@ -47,25 +59,20 @@ class CodeGenerationVisitor(ASTVisitor):
         self.node_count += 1
         if test & (var_node.lexeme == None): raise Exception('error None identifier') # test
         return var_node.lexeme
-        '''
-        cannot call a lookup function here since lookup function may differ if a new variable or function is declared or in the case of an assignment
-        in case of assignment - if a value is assigned to a variable (or function is called)
-        Hence commented code,
-        # return symboltable.lookupGetType(var_node.lexeme)
-        '''
 
     def visit_block_node(self, block_node):
         self.node_count += 1
         self.block_count += 1 # to identify block function name, such as block1
         # self.appendInstruction(f'push {len(block_node.stmts)}') # length of ParL statements does not equal to PArIR statements
-        self.appendInstruction('push 0') # space is allocated one space at a time whenever an 'st' (store) is found
-        self.appendInstruction('oframe') # oframe and cframe are supposed to be used for memory stack
+        instructions = []
+        instructions.append('push 0') # space is allocated one space at a time whenever an 'st' (store) is found
+        instructions.append('oframe') # oframe and cframe are supposed to be used for memory stack
         self.symboltable.push()
         for st in block_node.stmts:
-            returnValue = st.accept(self)
+            instructions.append( st.accept(self) )
             if returnValue != None: break
-        self.appendInstruction('cframe')
-        return returnValue
+        instructions.append('cframe')
+        return instructions
 
 
     def visit_program_node(self, program_node):
@@ -319,15 +326,18 @@ class CodeGenerationVisitor(ASTVisitor):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"IfStatement node => ")
         self.inc_tab_count()
+        
         node.expr.accept(self)
         # compare using expr
         linesNumIf = linesNumElse = None
         if (linesNumIf == linesNumElse) & (linesNumIf == None): raise Exception("FATAL ERROR - do not know how to get number of lines of if or else block")
-        self.appendInstruction(f'push #PC+{linesNum+1}\ncjmp') # +1 to jump over (exclude) the jump statement found after `blockIf`
-        returnValue = node.blockIf.accept(self)
-        self.appendInstruction(f'push #PC+{linesNum}\njmp')
-        if node.blockElse != None: returnValue = node.blockElse.accept(self)
+        self.appendInstruction(f'push #PC+{len(ifBlockInstructions)+1}\ncjmp') # jump over if - +1 to jump over (exclude) the jump statement found after `blockIf`
+        ifBlockInstructions = node.blockIf.accept(self)
+        self.appendInstruction(f'push #PC+{len(elseBlockInstructions)}\njmp')
+        if node.blockElse != None: elseBlockInstructions = node.blockElse.accept(self)
+        
         self.dec_tab_count()
+        # return ifStatInstructions
 
     def visit_forstatement_node(self, node):
         self.node_count += 1
