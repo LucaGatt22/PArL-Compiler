@@ -9,7 +9,7 @@ class CodeGenerationVisitor(ASTVisitor):
         super().__init__()
         self.name = "Code Generation Visitor"
         self.symboltable = SymbolTable()
-        self.instructions = []
+        self.instructionsGlobal = []
         self.node_count = 0
         self.block_count = 0
         
@@ -23,7 +23,7 @@ class CodeGenerationVisitor(ASTVisitor):
             self.appendToFile(instruction)
 
     def appendInstruction(self, instruction):
-        self.instructions.append(instruction)
+        self.instructionsGlobal.append(instruction)
         # self.appendInstruction(instruction)
 
     def appendBlockInstructionsToParent(parentInstructions, blockInstructions):
@@ -125,21 +125,23 @@ class CodeGenerationVisitor(ASTVisitor):
         
     def visit_bool_node(self, bool_node):
         self.visit_general(bool_node.value, "Bool", 'value')
-        return 'bool'
+        return bool_node.value
     def visit_float_node(self, float_node):
         self.visit_general(float_node.value, "Float", 'value')
         self.appendInstruction(f'push {float_node.value}')
-        return 'float'
+        return float_node.value
     def visit_colour_node(self, colour_node):
         self.visit_general(colour_node.value, "Colour", 'value')
         self.appendInstruction(f'push {colour_node.value}')
-        return 'colour'
+        return colour_node.value
     def visit_padwidth_node(self):
         self.visit_general(None, "PadWidth", 'cmd')
         self.appendInstruction('width')
+        return 'width'
     def visit_padheight_node(self):
         self.visit_general(None, "PadHeight", 'cmd')
         self.appendInstruction('height')
+        return 'height'
 
     def visit_padread_node(self, padread_node):
         self.node_count += 1
@@ -152,6 +154,7 @@ class CodeGenerationVisitor(ASTVisitor):
     def visit_padrandi_node(self, node):
         self.visit_general(node.value, "PadRandI", 'parent')
         self.appendInstruction('irnd')
+        return 'irnd'
 
     def visit_identifierarray_node(self, identifierarray_node):
         self.node_count += 1
@@ -164,26 +167,49 @@ class CodeGenerationVisitor(ASTVisitor):
     def visit_multiop_node(self, multiop_node):
         self.visit_general(multiop_node.operationValue, "MultiplicativeOp", 'value')
 
-        if multiop_node.operationValue == '*': self.appendInstruction('mul')
-        elif multiop_node.operationValue == '/': self.appendInstruction('div')
-        elif multiop_node.operationValue == 'and': self.appendInstruction('and')
+        if multiop_node.operationValue == '*':
+            self.appendInstruction('mul')
+            return 'mul'
+        elif multiop_node.operationValue == '/':
+            self.appendInstruction('div')
+            return 'div'
+        elif multiop_node.operationValue == 'and':
+            self.appendInstruction('and')
+            return 'and'
     def visit_addop_node(self, addop_node):
         self.visit_general(addop_node.operationValue, "AdditiveOp", 'value')
 
-        if addop_node.operationValue == '+': self.appendInstruction('add')
-        elif addop_node.operationValue == '-': self.appendInstruction('sub')
-        elif addop_node.operationValue == 'or': self.appendInstruction('or')
+        if addop_node.operationValue == '+':
+            self.appendInstruction('add')
+            return 'add'
+        elif addop_node.operationValue == '-':
+            self.appendInstruction('sub')
+            return 'sub'
+        elif addop_node.operationValue == 'or':
+            self.appendInstruction('or')
+            return 'or'
     def visit_relop_node(self, relop_node):
         self.visit_general(relop_node.operationValue, "RelationalOp", 'value')
 
-        if relop_node.operationValue == '<': self.appendInstruction('lt')
-        elif relop_node.operationValue == '>': self.appendInstruction('gt')
-        elif relop_node.operationValue == '==': self.appendInstruction('eq')
+        if relop_node.operationValue == '<':
+            self.appendInstruction('lt')
+            return 'lt'
+        elif relop_node.operationValue == '>':
+            self.appendInstruction('gt')
+            return 'gt'
+        elif relop_node.operationValue == '==':
+            self.appendInstruction('eq')
+            return 'eq'
         elif relop_node.operationValue == '!=': # same as inversion of the boolean returned by ==
             self.appendInstruction('eq')
             self.appendInstruction('not') # inversion of boolean i.e. (0 to 1) and (1 to 0)
-        elif relop_node.operationValue == '<=': self.appendInstruction('le')
-        elif relop_node.operationValue == '>=': self.appendInstruction('ge')
+            return ['eq', 'not']
+        elif relop_node.operationValue == '<=':
+            self.appendInstruction('le')
+            return 'le'
+        elif relop_node.operationValue == '>=':
+            self.appendInstruction('ge')
+            return 'ge'
 
 
     def visit_oneListAttribute(self, childNodes, nodeName:str):
@@ -206,6 +232,8 @@ class CodeGenerationVisitor(ASTVisitor):
         if functioncall_node.actualParams != None: functioncall_node.actualParams.accept(self)
         self.dec_tab_count()
 
+        return [ f'push .{identifier}', 'call' ]
+
     def visit_subexpr_node(self, subexpr_node):
         self.visit_general(subexpr_node.expr, "SubExpr", 'parent')
 
@@ -218,40 +246,46 @@ class CodeGenerationVisitor(ASTVisitor):
         node.expr.accept(self) # expr before VM's 'not' command
         self.dec_tab_count()
 
-        if node.unaryOp == 'not': self.appendInstruction('not')
+        if node.unaryOp == 'not':
+            self.appendInstruction('not')
+            return 'not'
         elif node.unaryOp == '-': raise Exception('- UnaryOperator is excluded in code generation.')
 
         
 
     def visit_factor_node(self, node):
         self.visit_general(node.childNode, "Factor", 'parent')
+        return node.childNode
         
 
     def visit_node_list(self, node): # implements visit_node functions of term, simpleexpr, and expr
-        node.nodes[0].accept(self) # operand
+        instructions = [ node.nodes[0].accept(self) ] # operand
         for operatorChildIndex in range(1,len(node.nodes),2): # iterate over each pair of an operand and an operator
-            node.nodes[operatorChildIndex+1].accept(self) # operand
-            node.nodes[operatorChildIndex].accept(self) # operator
+            instructions.append( node.nodes[operatorChildIndex+1].accept(self) ) # operand
+            instructions.append( node.nodes[operatorChildIndex].accept(self) ) # operator
+        return instructions
     def visit_term_node(self, node):
         # self.visit_oneListAttribute(node.nodes, 'Term')
         
-        self.visit_node_list(node)
+        return self.visit_node_list(node)
 
     def visit_simpleexpr_node(self, node):
         # self.visit_oneListAttribute(node.nodes, 'SimpleExpr')
         
-        self.visit_node_list(node)
+        return self.visit_node_list(node)
 
     def visit_expr_node(self, node): # will not work
         # self.visit_oneListAttribute(node.nodes, 'Expr')
-        self.visit_node_list(node)
+        instructions = self.visit_node_list(node)
 
         # as clause
         if node.typeLiteral != None:
             self.inc_tab_count()
             print('\t' * self.tab_count, "Type::", node.typeLiteral)
             self.dec_tab_count()
-            return node.typeLiteral
+            # return node.typeLiteral # do not need to handle typeLiteral since every type is converted to a number in VM
+
+        return instructions
         
 
     def genCodeInsertVar(self, identifier, symbolType):
@@ -262,15 +296,19 @@ class CodeGenerationVisitor(ASTVisitor):
         self.appendInstruction(f'push {symbolValueAddr.frameIndex}') # a
         self.appendInstruction('st')
 
+        return [instructions] + [ # yet to assign `instructions`
+            f'push {symbolValueAddr.symbolIndex}', # b
+            f'push {symbolValueAddr.frameIndex}', # a
+            'st'
+        ]
+
     def visit_variabledecl_node(self, variabledecl_node):
         self.node_count += 1
         
         identifier = variabledecl_node.identifier.accept(self)
-        symbolType = variabledecl_node.variableDeclSuffix.accept(self)
+        symbolType, exprInstructions = variabledecl_node.variableDeclSuffix.accept(self)
         
-        if self.symboltable.lookupCurrentFrame(identifier) != None: raise Exception(f'Variable or function {identifier} already initialised')
-        
-        self.genCodeInsertVar(identifier, symbolType)
+        return [exprInstructions] + self.genCodeInsertVar(identifier, symbolType)
 
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
@@ -278,9 +316,8 @@ class CodeGenerationVisitor(ASTVisitor):
             node.variableDeclArray.accept()
         except AttributeError: # if variableDeclArray does not exist in the node instance
             symbolType = node.typeLiteral.accept()
-            node.expr.accept()
-            
-            return symbolType
+            exprInstructions = node.expr.accept()
+            return symbolType, exprInstructions
 
     def visit_variabledeclarray_node(self, node):
         self.node_count += 1
@@ -299,27 +336,38 @@ class CodeGenerationVisitor(ASTVisitor):
         # self.appendInstruction(f'push {node.expr}') # only terminals have push command
         
     def visit_printstatement_node(self, node):
-        self.visit_requireexpr_node(node, "PrintStatement") # can be of any type
+        instructions = self.visit_requireexpr_node(node, "PrintStatement") # can be of any type
         self.appendInstruction('print')
+        instructions.append('print')
+        return instructions
     def visit_delaystatement_node(self, node):
         self.visit_requireexpr_node(node, "DelayStatement")
         self.appendInstruction('delay')
+        instructions.append('delay')
+        return instructions
 
     def visit_writestatement_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"WriteStatement node => ")
         self.inc_tab_count()
-        for expr in node.exprs:
-            node.expr.accept()
+        instructions = [ node.expr.accept() for expr in node.exprs ]
         self.dec_tab_count()
         
-        if len(node.exprs) == 3: self.appendInstruction('write')
-        elif len(node.exprs) == 5: self.appendInstruction('writebox')
+        if len(node.exprs) == 3:
+            self.appendInstruction('write')
+            instructions.append('write')
+            return instructions
+        elif len(node.exprs) == 5:
+            self.appendInstruction('writebox')
+            instructions.append('writebox')
+            return instructions
         else: raise Exception("FATAL ERROR")
 
     def visit_rtrnstatement_node(self, node):
-        self.visit_requireexpr_node(node, "RtrnStatement")
+        instructions = self.visit_requireexpr_node(node, "RtrnStatement")
         self.appendInstruction('ret')
+        instructions.append('ret')
+        return instructions
         
 
     def visit_ifstatement_node(self, node): # work in progress
@@ -348,8 +396,6 @@ class CodeGenerationVisitor(ASTVisitor):
         if node.assignment != None: node.assignment.accept(self)
         node.block.accept(self)
         self.dec_tab_count()
-
-        if exprType != 'bool': raise Exception('Expected bool in ForStatement')
 
     def visit_whilestatement_node(self, node):
         self.node_count += 1
