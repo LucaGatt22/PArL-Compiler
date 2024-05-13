@@ -26,7 +26,7 @@ class CodeGenerationVisitor(ASTVisitor):
         self.instructionsGlobal.append(instruction)
         # self.appendInstruction(instruction)
 
-    def appendBlockInstructionsToParent(parentInstructions, blockInstructions):
+    def appendBlockInstructionsToParent(parentInstructions, blockInstructions): # not used
         for instruction in blockInstructions:
             appendInstruction(instruction)
 
@@ -296,7 +296,8 @@ class CodeGenerationVisitor(ASTVisitor):
         self.appendInstruction(f'push {symbolValueAddr.frameIndex}') # a
         self.appendInstruction('st')
 
-        return [instructions] + [ # yet to assign `instructions`
+        return [ # no instructions appended here since this function is a helper function, not a `visit_node()` function
+            'alloc 1',
             f'push {symbolValueAddr.symbolIndex}', # b
             f'push {symbolValueAddr.frameIndex}', # a
             'st'
@@ -308,7 +309,7 @@ class CodeGenerationVisitor(ASTVisitor):
         identifier = variabledecl_node.identifier.accept(self)
         symbolType, exprInstructions = variabledecl_node.variableDeclSuffix.accept(self)
         
-        return [exprInstructions] + self.genCodeInsertVar(identifier, symbolType)
+        return exprInstructions + self.genCodeInsertVar(identifier, symbolType)
 
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
@@ -375,7 +376,7 @@ class CodeGenerationVisitor(ASTVisitor):
         print('\t' * self.tab_count, str(nodeName)+"IfStatement node => ")
         self.inc_tab_count()
         
-        node.expr.accept(self)
+        exprInstructions = node.expr.accept(self)
         # compare using expr
         linesNumIf = linesNumElse = None
         if (linesNumIf == linesNumElse) & (linesNumIf == None): raise Exception("FATAL ERROR - do not know how to get number of lines of if or else block")
@@ -383,27 +384,32 @@ class CodeGenerationVisitor(ASTVisitor):
         ifBlockInstructions = node.blockIf.accept(self)
         self.appendInstruction(f'push #PC+{len(elseBlockInstructions)}\njmp')
         if node.blockElse != None: elseBlockInstructions = node.blockElse.accept(self)
-        
+
         self.dec_tab_count()
+        return exprInstructions + [f'push #PC+{len(ifBlockInstructions)+1}\ncjmp'] +
+            ifBlockInstructions + [f'push #PC+{len(elseBlockInstructions)}\njmp'] + elseBlockInstructions
         # return ifStatInstructions
 
     def visit_forstatement_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"ForStatement node => ")
         self.inc_tab_count()
-        if node.varDec != None: node.varDec.accept(self)
-        node.expr.accept(self)
-        if node.assignment != None: node.assignment.accept(self)
-        node.block.accept(self)
+        if node.varDec != None: varDecInstructions = node.varDec.accept(self)
+        exprInstructions = node.expr.accept(self)
+        if node.assignment != None: assignmentInstructions = node.assignment.accept(self)
+        blockInstructions = node.block.accept(self)
         self.dec_tab_count()
 
     def visit_whilestatement_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"WhileStatement node => ")
         self.inc_tab_count()
-        node.expr.accept(self)
-        node.block.accept(self)
+        exprInstructions = node.expr.accept(self) # b
+        # f'push #PC+{len(blockInstructions)+1}\ncjmp'
+        blockInstructions = node.block.accept(self) # a
+        # f'push #PC-{len(blockInstructions)+1}\njmp' # jump to 'cjmp' (conditional jump)
         self.dec_tab_count()
+        return exprInstructions + [f'push #PC+{len(blockInstructions+1)}\ncjmp'] + blockInstructions + [f'push #PC-{len(blockInstructions)+1}\njmp']
 
     
     def visit_formalparam_node(self, node):
@@ -415,18 +421,20 @@ class CodeGenerationVisitor(ASTVisitor):
         if node.integerLiteral != None: node.integerLiteral.accept(self)
         self.dec_tab_count()
 
-        self.genCodeInsertVar(identifier, symbolType)
+        return self.genCodeInsertVar(identifier, symbolType)
         
 
     def visit_formalparams_node(self, node):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"FormalParams node => ")
         self.inc_tab_count()
-        self.appendInstruction(f'push {len(node.formalparams)}')
+        # self.appendInstruction(f'push {len(paramsInstructions)}')
         self.appendInstruction(f'oframe')
+        paramsInstructions = []
         for formalparam in node.formalparams:
-            formalparam.accept(self)
+            paramsInstructions.append(formalparam.accept(self))
         self.dec_tab_count()
+        return [f'push {len(paramsInstructions)}\noframe'] + paramsInstructions
 
     def visit_functiondecl_node(self, node):
         self.node_count += 1
@@ -434,17 +442,21 @@ class CodeGenerationVisitor(ASTVisitor):
         print('\t' * self.tab_count, "FunctionDecl node => ")
         self.inc_tab_count()
         name = node.identifier.accept(self)
-        if self.symboltable.lookupCurrentFrame(name) != None: raise Exception(f'{name} already declared.')
+        # if self.symboltable.lookupCurrentFrame(name) != None: raise Exception(f'{name} already declared.') # check done in semantic analysis
         self.appendInstruction(f'\n.{name}') # newline to seperate between functions
-        if node.formalParams != None: formalParamsTypes = node.formalParams.accept(self) # symbol inserts in formalParams
+        if node.formalParams != None: paramsInstructions = node.formalParams.accept(self) # symbol inserts in formalParams
+        ''' # return type - semantic analysis so exclude
         returnType = node.typeLiteral.accept(self)
-        if node.integerLiteral != None: node.integerLiteral.accept(self)
-        returnValue = node.block.accept(self)
+        if node.integerLiteral != None: node.integerLiteral.accept(self) # part of return type, so part of semantic analysis check
+        '''
+        blockInstructions = node.block.accept(self)
         self.dec_tab_count()
         
         symbolType = f'function {formalParamsTypes} -> {returnType}' # the type of a function is 'function' together with its signature
         self.symboltable.insert(name, symbolType)
         self.appendInstruction('cframe') # close frame opened in `visit_formalparams_node()`
+
+        return [f'\n.{name}'] + paramsInstructions + blockInstructions + ['cframe']
 
 
 if __name__ == '__main__':
