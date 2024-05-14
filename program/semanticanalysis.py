@@ -129,6 +129,8 @@ class SemanticAnalysisVisitor(ASTVisitor):
         identifierarray_node.index.accept(self)
         self.dec_tab_count()
 
+        raise NotImplementedError('did not implement visit_identifierarray_node() for semantic analysis\n\tYet to implement check for array out of bounds')
+
     def visit_multiop_node(self, multiop_node):
         self.visit_general(multiop_node.operationValue, "MultiplicativeOp", 'value')
     def visit_addop_node(self, addop_node):
