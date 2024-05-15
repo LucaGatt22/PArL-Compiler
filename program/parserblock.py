@@ -164,7 +164,7 @@ class Parser:
             
             # check for array part
             if self.ParseTokenNoValue(lex.TokenType.openSquareBracket):
-                expr = ParseExpr()
+                expr = self.ParseExpr()
                 if (expr != None) & self.ParseTokenNoValue(lex.TokenType.closeSquareBracket):
                     return ast.ASTIdentifierArrayNode( identifierNode, expr )
             else: return identifierNode
@@ -270,7 +270,7 @@ class Parser:
             self.NextToken()
             if self.crtToken.type == lex.TokenType.floatLiteral: pass # continue from here
 
-    ParseExpr = lambda self: self.ParseExpression()
+    ParseExpr = lambda self: self.ParseExpression() # alias
     def ParseExpression(self):
         if self.test: print('accessed ParseExpression()')
         simpleExpr = self.ParseSimpleExpr()
@@ -342,11 +342,13 @@ class Parser:
     def ParseVariableDeclSuffix(self):
         if self.ParseTokenNoValue(lex.TokenType.colon):
             typeLiteral = self.ParseType()
-            if (typeLiteral != None) & self.ParseTokenNoValue(lex.TokenType.equals):
-                expr = self.ParseExpr()
-                if expr != None: return ast.ASTVariableDeclSuffixNode(typeLiteral, expr)
-        elif self.ParseTokenNoValue(lex.TokenType.openSquareBracket):
-            return ast.ASTVariableDeclSuffixNode( self.ParseVariableDeclArray() )
+            if (typeLiteral != None):
+                if self.ParseTokenNoValue(lex.TokenType.equals):
+                    expr = self.ParseExpr()
+                    if expr != None: return ast.ASTVariableDeclSuffixNode(typeLiteral, expr)
+                elif self.ParseTokenNoValue(lex.TokenType.openSquareBracket):
+                    return ast.ASTVariableDeclSuffixNode( self.ParseVariableDeclArray() )
+        # raise Exception("FATAL ERROR - Function should not reach this line.") # can write this for all functions, although an error would still occur when not written
             
     def ParseVariableDecl(self):
         if self.ParseTokenNoValue(lex.TokenType.letKeyword):
@@ -416,7 +418,7 @@ class Parser:
     def ParseWhileStatement(self):
         if self.ParseTokenNoValue(lex.TokenType.whileKeyword):
             if self.ParseTokenNoValue(lex.TokenType.openBracket):
-                expr = ParseExpr()
+                expr = self.ParseExpr()
                 if (expr != None) & self.ParseTokenNoValue(lex.TokenType.closeBracket):
                     block = ParseBlock()
                     if block != None: return ast.ASTWhileStatementNode(expr, block)
