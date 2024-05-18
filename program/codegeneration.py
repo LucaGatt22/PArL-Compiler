@@ -58,6 +58,11 @@ class CodeGenerationVisitor(ASTVisitor):
     def visit_identifier_node(self, var_node):
         self.node_count += 1
         if test & (var_node.lexeme == None): raise Exception('error None identifier') # test
+        try:
+            valueAddr = symboltable.lookupGetValueAddr(var_node.lexeme)
+            return f'push [{valueAddr.symbolIndex}:{valueAddr.frameIndex}]' # [i:I]
+        except Exception: pass # return [i:I] if variable or function exists
+
         return var_node.lexeme
 
     def visit_block_node(self, block_node):

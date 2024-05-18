@@ -9,7 +9,7 @@ class SymbolTable:
         self.currentFrame = {} # reinitialise
 
     def insert(self, name:str, typeSymbol):#, value=None):
-        self.currentFrame[name] = {
+        self.currentFrame[name] = { # the identifier is the index
             'name': name,
             'type': typeSymbol, # check type before update with possible error to user
             'valueAddr': { # '[{len(currentFrame)}:{len(frames)}]' # symbolIndex:frameIndex
@@ -26,7 +26,7 @@ class SymbolTable:
         if symbol != None: return symbol
         for frame in reversed(self.frames):
             if name in frame:
-                return frame[name]
+                return frame[name] # symbol
         if symbol == None: raise Exception(f'Symbol {name} does not exist')
     def lookupGetType(self, name):
         symbol = self.lookup(name)
