@@ -146,7 +146,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
             elem.accept(self)
         self.dec_tab_count()
     def visit_actualparams_node(self, acParams_node):
-        visit_oneListAttribute(acParams_node.exprs, "ActualParams")
+        visit_oneListAttribute(acParams_node.exprs, "ActualParams") # no type checking needed
         
     def visit_functioncall_node(self, functioncall_node):
         self.node_count += 1
@@ -154,9 +154,22 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.inc_tab_count()
         identifier = functioncall_node.identifier.accept(self)
         symbolType = self.symboltable.lookupGetType(identifier)
-        if (symbolType == None) | (symbolType != 'function'): raise Exception("Function does not exist") # did not implement function/method signature in type check
-        if functioncall_node.actualParams != None: functioncall_node.actualParams.accept(self)
+        if (symbolType == None) | (not symbolType.startswith('function')): raise Exception("Function {identifier} does not exist") # did not implement function/method signature in type check
+
+        formalParamsTypes, returnType = formalParamsTypes_returnType.split(' -> ')
+        formalParamsTypes = formalParamsTypes[10:-1] # remove 'function', '<' and '>'
+        if functioncall_node.actualParams == None: raise Exception('actualParams is None')
+        functioncall_node.actualParams.accept(self)
+        formal_params = formalParamsTypes.split(', ')
+        if len(actual_params) != len(formal_params):
+            raise Exception(f"Number of parameters mismatch for function '{identifier}'. Expected {len(formal_params)}, got {len(actual_params)}.")
+
+        for actual_param, formal_param in zip(actual_params, formal_params):
+            if actual_param != formal_param:
+                raise Exception(f"Type mismatch for parameter in function '{identifier}'. Expected '{formal_param}', got '{actual_param}'.")
+        
         self.dec_tab_count()
+        return returnType
 
     def visit_subexpr_node(self, subexpr_node):
         exprType = self.visit_general(subexpr_node.expr, "SubExpr", 'parent')
