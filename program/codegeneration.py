@@ -86,11 +86,14 @@ class CodeGenerationVisitor(ASTVisitor):
         self.inc_tab_count()
         
         self.appendInstruction('.main')
+        instructions = ['.main']
         for st in program_node.stmts:
-            st.accept(self)
+            instructions.append(st.accept(self))
         self.appendInstruction('halt')
         
         self.dec_tab_count()
+
+        return instructions + ['halt']
 
     def visit_type_node(self, type_node):
         self.node_count += 1
