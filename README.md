@@ -1,4 +1,5 @@
-dsplit into lexer, astnodes and parser
+# documentation CPS2000 Compiler
+The compiler is split into the lexer, astnodes and parser
 lexer: has character categories and using them, identifies the tokens of the code string provided.
 astnodes contains all the astnodes and the PrintVisitor class with the respective visit node functions
 parser: parses the tokens created by the lexer and creates the AST node objects with the tokens provided by the lexer.
@@ -35,8 +36,8 @@ CodeGenerationVisitor - It generates PArIR instrucions based on the PArL program
 
 ## More points on semantic SemanticAnalysis
 WriteStatement
- - __write in PArL takes 3 expr i.e. colour, pointX, pointY
- - __write_box in PArL takes 5 expr i.e. colour, topLeftPointX, topLeftPointY, bottomRightPointX, bottomRightPointY
+ - `__write` in PArL takes 3 expr i.e. colour, pointX, pointY
+ - `__write_box` in PArL takes 5 expr i.e. colour, topLeftPointX, topLeftPointY, bottomRightPointX, bottomRightPointY
 
 Function
  - signature - A function signature is introduced to specify the function well to type check it.
@@ -51,5 +52,6 @@ Unused PArL and VM commands
 〈VariableDeclSuffix〉in eBNF is wrong. It should have brackets before `=` and after `〈VariableDeclArray〉` for clarity.
  - Arranged 〈VariableDeclSuffix〉 to suit the example `let list_of_integers : int[] = [23, 54, 3, 65, 99, 120, 34, 21];`
 
- Order (BIDMAS) should be accepted although not tested due to the structure of the eBNF given where:
-    there are different kinds of operators in the eBNF such as relationalOperator (relationalOp)
+Order (BIDMAS) should be accepted, although not tested due to the structure of the eBNF given, where there are:
+ - different kinds of operators in the eBNF such as relationalOperator (relationalOp)
+ - `()` via the `SubExpr` node and non-terminal
