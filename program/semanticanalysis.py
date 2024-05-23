@@ -221,11 +221,11 @@ class SemanticAnalysisVisitor(ASTVisitor):
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
         try: # https://www.w3schools.com/python/python_try_except.asp
-            node.variableDeclArray.accept()
+            node.variableDeclArray.accept(self)
         except AttributeError: # if variableDeclArray does not exist in the node instance
-            symbolType = node.typeLiteral.accept()
-            exprType = node.expr.accept()
-            if symbolType != exprType: raise Exception("TypeConflictError: Expression type does not match with variable type.")
+            symbolType = node.typeLiteral.accept(self)
+            exprType = node.expr.accept(self)
+            if symbolType != exprType: raise Exception(f"TypeConflictError: Expression type does not match with variable type. symbolType={symbolType}, exprType={exprType}")
             return symbolType
 
     def visit_variabledeclarray_node(self, node):
@@ -233,11 +233,11 @@ class SemanticAnalysisVisitor(ASTVisitor):
         print('\t' * self.tab_count, str(nodeName)+"VariableDeclSuffix node => ")
         self.inc_tab_count()
         try:
-            node.integerLiteral.accept()
-            node.literal.accept()
+            node.integerLiteral.accept(self)
+            node.literal.accept(self)
         except AttributeError:
             for elem in node.literals:
-                elem.accept()
+                elem.accept(self)
         self.dec_tab_count()
 
     def visit_requireexpr_node(self, node, nodeName):
@@ -254,7 +254,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
         print('\t' * self.tab_count, str(nodeName)+"WriteStatement node => ")
         self.inc_tab_count()
         for expr in node.exprs:
-            node.expr.accept()
+            node.expr.accept(self)
         self.dec_tab_count()
 
     def visit_rtrnstatement_node(self, node):
@@ -334,14 +334,14 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.symboltable.insert(name, symbolType)
 
 
-if __name__ == '__main__':
+def driverCode():
     # parser driver code
     #parser = Parser("x=23;")
-    parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
+    # parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
 ##    parser = Parser("x = hello();")
 ##    parser.test = True # test
 ##    parser = Parser("x=   23 ; y=  100;")
-##    parser = Parser('{ z = 23 ; xy=3; }')
+    parser = Parser('{ let z:int = 23 ; xy=3; }')
     parser.Parse()
 
     
@@ -355,3 +355,5 @@ if __name__ == '__main__':
     # print nodes visitor
     print_visitor = PrintNodesVisitor()
     parser.ASTroot.accept(print_visitor)
+if __name__ == '__main__':
+    driverCode()

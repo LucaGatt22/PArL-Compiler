@@ -179,10 +179,10 @@ class PrintNodesVisitor(ASTVisitor):
         print('\t' * self.tab_count, str(nodeName)+"VariableDeclSuffix node => ")
         self.inc_tab_count()
         try: # https://www.w3schools.com/python/python_try_except.asp
-            node.variableDeclArray.accept()
+            node.variableDeclArray.accept(self)
         except AttributeError: # if variableDeclArray does not exist in the node instance
-            node.typeLiteral.accept()
-            node.expr.accept()
+            node.typeLiteral.accept(self)
+            node.expr.accept(self)
         self.dec_tab_count()
 
     def visit_variabledeclarray_node(self, node):
@@ -190,11 +190,11 @@ class PrintNodesVisitor(ASTVisitor):
         print('\t' * self.tab_count, str(nodeName)+"VariableDeclArray node => ")
         self.inc_tab_count()
         try:
-            node.integerLiteral.accept()
-            node.literal.accept()
+            node.integerLiteral.accept(self)
+            node.literal.accept(self)
         except AttributeError:
             for elem in node.literals:
-                elem.accept()
+                elem.accept(self)
         self.dec_tab_count()
 
     def visit_requireexpr_node(self, node, nodeName):
@@ -209,7 +209,7 @@ class PrintNodesVisitor(ASTVisitor):
         print('\t' * self.tab_count, str(nodeName)+"WriteStatement node => ")
         self.inc_tab_count()
         for expr in node.exprs:
-            node.expr.accept()
+            node.expr.accept(self)
         self.dec_tab_count()
 
     def visit_rtrnstatement_node(self, node):

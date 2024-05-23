@@ -279,15 +279,14 @@ class ASTVariableDeclNode(ASTNode):
         return visitor.visit_variabledecl_node(self)
 
 class ASTVariableDeclSuffixNode(ASTNode):
-    def __init__(self):
+    def __init__(self, typeLiteral=None, expr=None, variableDeclArray=None):
         self.name = "ASTVariableDeclSuffixNode"
-    def __init__(self, typeLiteral, expr):
-        __init__(self)
-        self.typeLiteral = typeLiteral # children
-        self.expr = expr
-    def __init__(self, variableDeclArray):
-        __init__(self)
-        self.variableDeclArray = variableDeclArray
+        if (typeLiteral == None) & (expr == None) & (variableDeclArray == None): raise Exception('fatal error in class constuctor definition')
+        elif variableDeclArray != None:
+            self.variableDeclArray = variableDeclArray
+        else:
+            self.typeLiteral = typeLiteral # children
+            self.expr = expr
 
     def accept(self, visitor):
         return visitor.visit_variabledeclsuffix_node(self)
@@ -296,11 +295,11 @@ class ASTVariableDeclArrayNode(ASTNode):
     def __init__(self):
         self.name = "ASTVariableDeclArrayNode"
     def __init__(self, integerLiteral, literal):
-        __init__(self)
+        self.__init__()
         self.integerLiteral = integerLiteral # children
         self.literal = literal
     def __init__(self, literal):
-        __init__(self)
+        self.__init__()
         self.literals = [literal]
 
     def addLiteral(self, literal):

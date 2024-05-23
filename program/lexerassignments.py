@@ -140,7 +140,8 @@ class Lexer:
         self.Tx[3][self.lexeme_list.index("eq")] = 25 # ==  # update code elsewhere
         self.Tx[0][self.lexeme_list.index("!")] = 26
         self.Tx[26][self.lexeme_list.index("eq")] = 25 # !=
-        self.Tx[0][self.lexeme_list.index("relOp")] = 27 # < >
+        self.Tx[0][self.lexeme_list.index("relOp")] = 27 # <
+        self.Tx[0][self.lexeme_list.index(">")] = 27 # >
         self.Tx[27][self.lexeme_list.index("eq")] = 25 # <= >=
 
         self.Tx[0][self.lexeme_list.index("-")] = 28
@@ -364,9 +365,11 @@ def read_file_as_string(file_path):
         print(f"Error reading file: {e}")
         return None
 
+
 debug = False
-if __name__ == '__main__':
+def driverCode():
 ##    strIn = "_ __ __h __wdth __write_box __print not nota-b a_b - <= > != <= > != a b"
+    # x= hello() as _ __ __h 45 234__wdth __write_box __print not -> nota-b a_b - <= > != <= > != a b
     strIn = read_file_as_string("code.parl")
     if strIn is None: exit() # user has been notified of error already
     strIn = strIn.replace("\n", " ")
@@ -377,3 +380,8 @@ if __name__ == '__main__':
 
     for t in toks:
         print(t.type, t.lexeme)
+    for t in toks:
+        if t.lexeme == 'error': raise Exception('error in PaRL code')
+
+if __name__ == '__main__':
+    driverCode()

@@ -322,10 +322,10 @@ class CodeGenerationVisitor(ASTVisitor):
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
         try: # https://www.w3schools.com/python/python_try_except.asp
-            node.variableDeclArray.accept()
+            node.variableDeclArray.accept(self)
         except AttributeError: # if variableDeclArray does not exist in the node instance
-            symbolType = node.typeLiteral.accept()
-            exprInstructions = node.expr.accept()
+            symbolType = node.typeLiteral.accept(self)
+            exprInstructions = node.expr.accept(self)
             return symbolType, exprInstructions
 
     def visit_variabledeclarray_node(self, node):
@@ -333,11 +333,11 @@ class CodeGenerationVisitor(ASTVisitor):
         print('\t' * self.tab_count, str(nodeName)+"VariableDeclSuffix node => ")
         self.inc_tab_count()
         try:
-            node.integerLiteral.accept()
-            node.literal.accept()
+            node.integerLiteral.accept(self)
+            node.literal.accept(self)
         except AttributeError:
             for elem in node.literals:
-                elem.accept()
+                elem.accept(self)
         self.dec_tab_count()
 
     def visit_requireexpr_node(self, node, nodeName):
@@ -359,7 +359,7 @@ class CodeGenerationVisitor(ASTVisitor):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+"WriteStatement node => ")
         self.inc_tab_count()
-        instructions = [ node.expr.accept() for expr in node.exprs ]
+        instructions = [ node.expr.accept(self) for expr in node.exprs ]
         self.dec_tab_count()
         
         if len(node.exprs) == 3:
@@ -394,7 +394,7 @@ class CodeGenerationVisitor(ASTVisitor):
         if node.blockElse != None: elseBlockInstructions = node.blockElse.accept(self)
 
         self.dec_tab_count()
-        return exprInstructions + [f'push #PC+{len(ifBlockInstructions)+1}\ncjmp'] +
+        return exprInstructions + [f'push #PC+{len(ifBlockInstructions)+1}\ncjmp'] + \
             ifBlockInstructions + [f'push #PC+{len(elseBlockInstructions)}\njmp'] + elseBlockInstructions
         # return ifStatInstructions
 
@@ -467,14 +467,14 @@ class CodeGenerationVisitor(ASTVisitor):
         return [f'\n.{name}'] + paramsInstructions + blockInstructions + ['cframe']
 
 
-if __name__ == '__main__':
+def driverCode():
     # parser driver code
     #parser = Parser("x=23;")
-    parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
+    # parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
 ##    parser = Parser("x = hello();")
 ##    parser.test = True # test
 ##    parser = Parser("x=   23 ; y=  100;")
-##    parser = Parser('{ z = 23 ; xy=3; }')
+    parser = Parser('{ let z:int = 23 ; let xy:int; xy=3; }')
     parser.Parse()
 
     
@@ -489,4 +489,7 @@ if __name__ == '__main__':
 
     # print nodes visitor
     print_visitor = PrintNodesVisitor()
-    parser.ASTroot.accept(print_visitor) 
+    parser.ASTroot.accept(print_visitor)
+
+if __name__ == '__main__':
+    driverCode()

@@ -499,8 +499,9 @@ class Parser:
                 statement = self.ParseStatement()
                 if statement != None: block.add_statement(statement)
                 else:
-                    print('fatal error. Exiting loop') # should never be accessed because pf decision of while loop
-                    break
+                    # print('fatal error. Exiting loop') # should never be accessed because of decision of while loop
+                    # break
+                    raise Exception('statement cannot be None')
             return block
 
     def ParseProgram(self):                        
@@ -517,15 +518,17 @@ class Parser:
     def Parse(self):        
         self.ASTroot = self.ParseProgram()
 
-if __name__ == '__main__':
-    
+
+def driverCode():
     #parser = Parser("x=23;")
-    parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
-##    parser = Parser("x = hello();")
+    # parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
+    # parser = Parser("x = hello();")
 ##    parser.test = True # test
 ##    parser = Parser("x=   23 ; y=  100;")
-##    parser = Parser('{ z = 23 ; xy=3; }')
+    parser = Parser('{ z = 23 ; xy=3; }')
     parser.Parse()
 
     print_visitor = PrintNodesVisitor()
     parser.ASTroot.accept(print_visitor)
+if __name__ == '__main__':
+    driverCode()
