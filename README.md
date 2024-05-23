@@ -1,18 +1,22 @@
 # Documentation PaRL Compiler for CPS2000
-The compiler is split into the lexer, astnodes and parser
-lexer: has character categories and using them, identifies the tokens of the code string provided.
-astnodes contains all the astnodes and the PrintVisitor class with the respective visit node functions
-parser: parses the tokens created by the lexer and creates the AST node objects with the tokens provided by the lexer.
-Visitors:
- - PrintNodesVisitor
- - SemanticAnalsysis
- - CodeGeneration
+The compiler is split into the lexer, astnodes and parser and visitors to print nodes, for semantic analysis and for code generation of instructions understood by the `Pardis` VM. Hence, this compiler uses the Visitor Design Pattern.
+ - `lexer` module:
+   - `Lexer` class: has character categories and using them, identifies the tokens of the code string provided.
+ - `astnodes` module: contains all the `ASTNode` classes (eg `ASTPrintStatementNode`) for the `ParL` language which may or may not be used for the AST generation.
+ - `parser` module:
+   - `Parser` class: parses the tokens created by the lexer and creates the AST node objects with the tokens provided by the lexer.
+ - Visitors - these have visit node functions for all `ASTNode` classes:
+   - `PrintNodesVisitor` - displays an AST (Abstract Syntax Tree) structure of nodes in the console as a string
+   - `SemanticAnalysisVisitor` - performs type checking and scope checking (compares types and validates)
+   - `CodeGenerationVisitor` - writes or generates `PArIR` instructions of code to a file, upon which these instructions should be copied in the VM input.
 
-Note that throughout the documentation, the classes may have a small difference in their name, when compared to the codebase, such as `SemanticAnalsysis` and `SemanticAnalsysisVisitor`.
+There is no website link to the VM in the GitHub repository, as it is not owned by me. The code part of the project stops after code generation (Task 4) and implementing array functionality (Task 5). The `PArIR` instructions are copied from the instructions file to the VM input. The same goes for the Assignment Question (mentioned below), which is owned by the lecturer under the University of Malta.
+
+Note that throughout the documentation, the classes may have a small difference in their name, when compared to the codebase, such as `SemanticAnalysis` and `SemanticAnalysisVisitor`.
 Check out the **Classes** section for more details about the mentioned classes.
 
-Every Python file is constructed closely to the e-BNF provided in the assginment question.
-letter, digit and hex are the character categories handled by Lexer but not by Parser.
+Every Python file is constructed closely to the **e-BNF** provided in the assginment question.
+`letter`, `digit` and `hex` are the character categories handled by `Lexer` but not by `Parser`.
 
 ## Classes
 **Lexer**
