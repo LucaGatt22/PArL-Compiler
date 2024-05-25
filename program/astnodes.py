@@ -281,12 +281,12 @@ class ASTVariableDeclNode(ASTNode):
 class ASTVariableDeclSuffixNode(ASTNode):
     def __init__(self, typeLiteral=None, expr=None, variableDeclArray=None):
         self.name = "ASTVariableDeclSuffixNode"
-        if (typeLiteral == None) & (expr == None) & (variableDeclArray == None): raise Exception('fatal error in class constuctor definition')
-        elif variableDeclArray != None:
-            self.variableDeclArray = variableDeclArray
-        else:
+        if (typeLiteral != None) & (expr != None):
             self.typeLiteral = typeLiteral # children
             self.expr = expr
+        elif variableDeclArray != None:
+            self.variableDeclArray = variableDeclArray
+        else: raise Exception('fatal error in class constructor definition: The only allowed parameters are either (type and expr) or variableDeclArray')
 
     def accept(self, visitor):
         return visitor.visit_variabledeclsuffix_node(self)

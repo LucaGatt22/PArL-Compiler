@@ -365,6 +365,18 @@ def read_file_as_string(file_path):
         print(f"Error reading file: {e}")
         return None
 
+def remove_comments(source_code):
+    import re
+
+    # Remove single-line comments (//)
+    single_line_comment_pattern = r'//.*'
+    source_code_no_single_line_comments = re.sub(single_line_comment_pattern, '', source_code)
+
+    # Remove multi-line comments (/* ... */)
+    multi_line_comment_pattern = r'/\*.*?\*/'
+    source_code_no_comments = re.sub(multi_line_comment_pattern, '', source_code_no_single_line_comments, flags=re.DOTALL)
+
+    return source_code_no_comments
 
 debug = False
 def driverCode():
@@ -372,6 +384,7 @@ def driverCode():
     # x= hello() as _ __ __h 45 234__wdth __write_box __print not -> nota-b a_b - <= > != <= > != a b
     strIn = read_file_as_string("code.parl")
     if strIn is None: exit() # user has been notified of error already
+    strIn = remove_comments(strIn)
     strIn = strIn.replace("\n", " ")
     
     lex = Lexer()
