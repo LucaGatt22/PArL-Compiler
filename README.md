@@ -20,9 +20,9 @@ Every Python file is constructed closely to the **e-BNF** provided in the assgin
 
 ## Classes
 **Lexer**
- - creates tokens with the token types declared in the TokenType class of lexerassignments.py.
+ - creates tokens with the token types declared in the TokenType class of `lexerassignments.py`.
  - The lexer produces tokens such as identifiers, keywords, values and operators.
- - Comments are not allowed. If I were to allow comments, I must change the lexer to remove any comments. These are recognised by the // and /* ... */ symbols.
+ - Comments are allowed. The lexer removes any comments, before the lexical analysis is started. These are recognised by the // and /* ... */ symbols.
 
 **Parser**
  - generates AST (Abstract Syntax Tree)
@@ -49,7 +49,7 @@ astnodes - The structure of the AST is determined ASTNode classes in `astnodes.p
 **CodeGenerationVisitor** - It generates PArIR instrucions based on the PArL program given. **Not implemented yet.**
  - Address a location in the stack using [symbolIndex:frameIndex]
  - Started with one-by-one inputting of transactions in the generated code file, changed to a global instructions list and changed again to having each visit_node() function return its instructions to the parent node. This is done to be able to do function declaration and if statements. For example, to determine the number of lines to jump the if block, the instructions of the if block must be returned before generating the instructions, while keeping the overall correct chronology of instructions. By chronology, it is meant that 'cjmp' must still come before the if block.
-   - By returning instructions instead of writing immediately to the file, it allows for to get information about blocks before writing them in the file. Using this method, writing to file (using a new function to segregate functionality) is the last thing after the AST is traversed. Either the program node, since it is the root, writes to the file, or the driver code of the code generation module. This is done by calling this function. 
+   - By returning instructions instead of writing immediately to the file, it allows to get information about blocks before writing them in the file. Using this method, writing to file (using a new function to segregate functionality) is the last thing after the AST is traversed. Either the program node, since it is the root, writes to the file, or the driver code of the code generation module. This is done by calling this function. 
 
 ## More points on semantic SemanticAnalysis
 WriteStatement
