@@ -117,7 +117,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.inc_tab_count()
         padread_node.exprX.accept(self)
         padread_node.exprY.accept(self)
-        if (exprXType != 'int') | (exprYType != 'int'): raise Exception("Expected int in __read statement.")
+        if (exprXType != 'int') | (exprYType != 'int'): raise Exception("Expected 'int' in __read statement.")
         self.dec_tab_count()
 
     def visit_padrandi_node(self, node):
@@ -233,17 +233,21 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
+        print('\t' * self.tab_count, str(nodeName)+"VariableDeclSuffix node => ")
+        self.inc_tab_count()
         try: # https://www.w3schools.com/python/python_try_except.asp
-            variableDeclArrayType = node.variableDeclArray.accept(self) # return value not worked
+            variableDeclArrayType = node.variableDeclArray.accept(self) # return value probably not worked
+            return variableDeclArrayType
         except AttributeError: # if variableDeclArray does not exist in the node instance
             symbolType = node.typeLiteral.accept(self)
             exprType = node.expr.accept(self)
             if symbolType != exprType: raise Exception(f"TypeConflictError: Expression type does not match with variable type. symbolType={symbolType}, exprType={exprType}")
             return symbolType
+        self.dec_tab_count() # not reached due to return statements
 
     def visit_variabledeclarray_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"VariableDeclSuffix node => ")
+        print('\t' * self.tab_count, str(nodeName)+"VariableDeclArray node => ")
         self.inc_tab_count()
         try:
             node.integerLiteral.accept(self)
