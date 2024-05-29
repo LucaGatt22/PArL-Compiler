@@ -14,7 +14,7 @@ class SymbolTable:
             'type': typeSymbol, # check type before update with possible error to user
             'valueAddr': { # '[{len(currentFrame)}:{len(frames)}]' # symbolIndex:frameIndex
                 'symbolIndex': len(self.currentFrame),
-                'frameIndex': len(frames)
+                'frameIndex': len(self.frames)
             }
         } # introduced a new type 'function' for identifiers of functions. Introduced function/method signature
 

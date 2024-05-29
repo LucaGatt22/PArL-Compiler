@@ -143,7 +143,7 @@ class PrintNodesVisitor(ASTVisitor):
     def visit_unary_node(self, node):
         # commented code assumes '-' and 'not' are the same # self.visit_general(node.expr, "Unary", 'parent')
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"Unary node => ")
+        print('\t' * self.tab_count, "Unary node => ")
         self.inc_tab_count()
         print('\t' * self.tab_count, "Unary operator::", node.unaryOp)
         node.expr.accept(self)
@@ -163,12 +163,13 @@ class PrintNodesVisitor(ASTVisitor):
         # as clause
         if node.typeLiteral:
             self.inc_tab_count()
-            print('\t' * self.tab_count, "Type::", node.typeLiteral)
+            print('\t' * self.tab_count, "Type node =>")
+            node.typeLiteral.accept(self)
             self.dec_tab_count()
 
     def visit_variabledecl_node(self, variabledecl_node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"VariableDecl node => ")
+        print('\t' * self.tab_count, "VariableDecl node => ")
         self.inc_tab_count()
         variabledecl_node.identifier.accept(self)
         variabledecl_node.variableDeclSuffix.accept(self)
@@ -176,7 +177,7 @@ class PrintNodesVisitor(ASTVisitor):
 
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"VariableDeclSuffix node => ")
+        print('\t' * self.tab_count, "VariableDeclSuffix node => ")
         self.inc_tab_count()
         try: # https://www.w3schools.com/python/python_try_except.asp
             node.variableDeclArray.accept(self)
@@ -187,7 +188,7 @@ class PrintNodesVisitor(ASTVisitor):
 
     def visit_variabledeclarray_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"VariableDeclArray node => ")
+        print('\t' * self.tab_count, "VariableDeclArray node => ")
         self.inc_tab_count()
         try:
             node.integerLiteral.accept(self)
@@ -206,7 +207,7 @@ class PrintNodesVisitor(ASTVisitor):
 
     def visit_writestatement_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"WriteStatement node => ")
+        print('\t' * self.tab_count, "WriteStatement node => ")
         self.inc_tab_count()
         for expr in node.exprs:
             node.expr.accept(self)
@@ -217,7 +218,7 @@ class PrintNodesVisitor(ASTVisitor):
 
     def visit_ifstatement_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"IfStatement node => ")
+        print('\t' * self.tab_count, "IfStatement node => ")
         self.inc_tab_count()
         node.expr.accept(self)
         node.blockIf.accept(self)
@@ -226,7 +227,7 @@ class PrintNodesVisitor(ASTVisitor):
 
     def visit_forstatement_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"ForStatement node => ")
+        print('\t' * self.tab_count, "ForStatement node => ")
         self.inc_tab_count()
         if node.varDec != None: node.varDec.accept(self)
         node.expr.accept(self)
@@ -236,7 +237,7 @@ class PrintNodesVisitor(ASTVisitor):
 
     def visit_whilestatement_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"WhileStatement node => ")
+        print('\t' * self.tab_count, "WhileStatement node => ")
         self.inc_tab_count()
         node.expr.accept(self)
         node.block.accept(self)
@@ -244,7 +245,7 @@ class PrintNodesVisitor(ASTVisitor):
 
     def visit_formalparam_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"FormalParam node => ")
+        print('\t' * self.tab_count, "FormalParam node => ")
         self.inc_tab_count()
         node.identifier.accept(self)
         node.typeLiteral.accept(self)
@@ -253,7 +254,7 @@ class PrintNodesVisitor(ASTVisitor):
 
     def visit_formalparams_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"FormalParams node => ")
+        print('\t' * self.tab_count, "FormalParams node => ")
         self.inc_tab_count()
         for formalparam in node.formalparams:
             formalparam.accept(self)

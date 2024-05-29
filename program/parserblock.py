@@ -348,7 +348,6 @@ class Parser:
                     if expr != None: return ast.ASTVariableDeclSuffixNode(typeLiteral, expr)
                 elif self.ParseTokenNoValue(lex.TokenType.openSquareBracket):
                     return ast.ASTVariableDeclSuffixNode( self.ParseVariableDeclArray() )
-        # raise Exception("FATAL ERROR - Function should not reach this line.") # can write this for all functions, although an error would still occur when not written
             
     def ParseVariableDecl(self):
         if self.ParseTokenNoValue(lex.TokenType.letKeyword):
@@ -356,6 +355,7 @@ class Parser:
             if identifier != None:
                 variableDeclSuffix = self.ParseVariableDeclSuffix()
                 if variableDeclSuffix != None: return ast.ASTVariableDeclNode( identifier, variableDeclSuffix )
+##        raise Exception("VariableDecl not parsed") # can raise an Exception for all functions, although an error would still occur when not written
     # above def ParseVariableDeclSuffix
     # above def ParseVariableDeclArray
 
@@ -521,11 +521,12 @@ class Parser:
 
 def driverCode():
     #parser = Parser("x=23;")
-    # parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
-    # parser = Parser("x = hello();")
+    parser = Parser("let x: int =   23 ; __delay;")
+##    parser = Parser("let x =   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
+##    parser = Parser("x = hello();")
 ##    parser.test = True # test
 ##    parser = Parser("x=   23 ; y=  100;")
-    parser = Parser('{ z = 23 ; xy=3; }')
+##    parser = Parser('{ z = 23 ; xy=3; }')
     parser.Parse()
 
     print_visitor = PrintNodesVisitor()

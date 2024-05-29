@@ -104,10 +104,12 @@ class SemanticAnalysisVisitor(ASTVisitor):
     def visit_colour_node(self, colour_node):
         self.visit_general(colour_node.value, "Colour", 'value')
         return 'colour'
-    def visit_padwidth_node(self):
+    def visit_padwidth_node(self): # return width in pixels (integer)
         self.visit_general(None, "PadWidth", 'cmd')
-    def visit_padheight_node(self):
+        return 'int'
+    def visit_padheight_node(self): # return hieght in pixels (integer)
         self.visit_general(None, "PadHeight", 'cmd')
+        return 'int'
 
     def visit_padread_node(self, padread_node):
         self.node_count += 1
@@ -142,9 +144,17 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.node_count += 1
         print('\t' * self.tab_count, str(nodeName)+" node => ")
         self.inc_tab_count()
+        elemTypePrev = None
         for elem in childNodes:
-            elem.accept(self)
+            elemType = elem.accept(self)
+            if test: print("elemTypePrev="+str(elemTypePrev)) # test
+            if test: print("elemType="+str(elemType)) # test
+            if elemTypePrev == None: elemTypePrev = elemType
+            if test: print("elemTypePrev="+str(elemTypePrev)) # test
+            if test: print("elemType="+str(elemType)) # test
+            if elemType != elemTypePrev: raise Exception(f"Operands' types mismatch: {elemType} with {elemTypePrev}")
         self.dec_tab_count()
+        return elemType
     def visit_actualparams_node(self, acParams_node):
         visit_oneListAttribute(acParams_node.exprs, "ActualParams") # no type checking needed
         
@@ -156,17 +166,19 @@ class SemanticAnalysisVisitor(ASTVisitor):
         symbolType = self.symboltable.lookupGetType(identifier)
         if (symbolType == None) | (not symbolType.startswith('function')): raise Exception("Function {identifier} does not exist") # did not implement function/method signature in type check
 
-        formalParamsTypes, returnType = formalParamsTypes_returnType.split(' -> ')
+        formalParamsTypes, returnType = symbolType.split(' -> ')
         formalParamsTypes = formalParamsTypes[10:-1] # remove 'function', '<' and '>'
-        if functioncall_node.actualParams == None: raise Exception('actualParams is None')
-        functioncall_node.actualParams.accept(self)
-        formal_params = formalParamsTypes.split(', ')
-        if len(actual_params) != len(formal_params):
-            raise Exception(f"Number of parameters mismatch for function '{identifier}'. Expected {len(formal_params)}, got {len(actual_params)}.")
+        if functioncall_node.actualParams == None: actualParamsTypes = []
+        else: actualParamsTypes = functioncall_node.actualParams.accept(self)
+        formalParamsTypes = formalParamsTypes.split(', ')
+        if formalParamsTypes == ['']: formalParamsTypes = []
+        if test: print("formalParamsTypes="+str(formalParamsTypes)) # test
+        if len(actualParamsTypes) != len(formalParamsTypes):
+            raise Exception(f"Number of parameters mismatch for function '{identifier}'. Expected {len(formalParamsTypes)}, got {len(actualParamsTypes)}.")
 
-        for actual_param, formal_param in zip(actual_params, formal_params):
-            if actual_param != formal_param:
-                raise Exception(f"Type mismatch for parameter in function '{identifier}'. Expected '{formal_param}', got '{actual_param}'.")
+        for actualParamsType, formalParamsType in zip(actualParamsTypes, formalParamsTypes):
+            if actualParamsType != formalParamsType:
+                raise Exception(f"Type mismatch for parameter in function '{identifier}'. Expected '{formalParamsType}', got '{actualParamsType}'.")
         
         self.dec_tab_count()
         return returnType
@@ -203,9 +215,10 @@ class SemanticAnalysisVisitor(ASTVisitor):
         # as clause
         if node.typeLiteral != None:
             self.inc_tab_count()
-            print('\t' * self.tab_count, "Type::", node.typeLiteral)
+            print('\t' * self.tab_count, "Type node =>")
+            typeLiteral = node.typeLiteral.accept(self)
             self.dec_tab_count()
-            return node.typeLiteral
+            return typeLiteral
         return exprType
 
 
@@ -221,7 +234,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
         try: # https://www.w3schools.com/python/python_try_except.asp
-            node.variableDeclArray.accept(self)
+            variableDeclArrayType = node.variableDeclArray.accept(self) # return value not worked
         except AttributeError: # if variableDeclArray does not exist in the node instance
             symbolType = node.typeLiteral.accept(self)
             exprType = node.expr.accept(self)
@@ -324,6 +337,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
         self.inc_tab_count()
         name = node.identifier.accept(self)
         if self.symboltable.lookupCurrentFrame(name) != None: raise Exception(f'{name} already declared.')
+        formalParamsTypes = "<>"
         if node.formalParams != None: formalParamsTypes = node.formalParams.accept(self) # symbol inserts in formalParams
         node.typeLiteral.accept(self)
         if node.integerLiteral != None: node.integerLiteral.accept(self)
@@ -337,11 +351,12 @@ class SemanticAnalysisVisitor(ASTVisitor):
 def driverCode():
     # parser driver code
     #parser = Parser("x=23;")
-    # parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
+##    parser = Parser("let x: int =   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
+    parser = Parser("fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
 ##    parser = Parser("x = hello();")
 ##    parser.test = True # test
 ##    parser = Parser("x=   23 ; y=  100;")
-    parser = Parser('{ let z:int = 23 ; xy=3; }')
+##    parser = Parser('{ let z:int = 23 ; let xy: int =3; }')
     parser.Parse()
 
     
@@ -356,4 +371,5 @@ def driverCode():
     print_visitor = PrintNodesVisitor()
     parser.ASTroot.accept(print_visitor)
 if __name__ == '__main__':
+    test = True
     driverCode()
