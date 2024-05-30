@@ -5,23 +5,38 @@ from astvisitor import ASTVisitor
 from semanticanalysis import SemanticAnalysisVisitor
 
 class CodeGenerationVisitor(ASTVisitor):
+    # Constructor which initialises the instance variables used in this class
     def __init__(self):
         super().__init__()
         self.name = "Code Generation Visitor"
         self.symboltable = SymbolTable()
-        self.instructionsGlobal = []
+        self.instructionsGlobal = [] # not used but has related function - superseded by a new method of storing instructions
         self.node_count = 0
         self.block_count = 0
-        
+
+    
+    # Code generation utilities
+
+    # appendToFile(data) - defines the file and writes to it
     def appendToFile(self, data):
         with open('generatedcode.parir', 'a') as file:
             file.write(data + '\n')
         # print("Data appended successfully.")
 
+    '''
+    storeInstructionsInFile(instructions)
+    Goes throughout the instructions list, passing each instruction to appendToFile()
+    Can pass either `instructionsGlobal`, which is not being used, or the instructions local variable holding all the instructions
+      - The current strategy is for each visit_node() function to return its instructions to its parent, until the program_node is reached. This function is called in either the program_node or after the traversal is finished.
+    '''
     def storeInstructionsInFile(self, instructions):
         for instruction in instructions:
             self.appendToFile(instruction)
 
+    '''
+    appendInstruction(instruction)
+    This function is not used since instructionsGlobal instance variable is not used
+    '''
     def appendInstruction(self, instruction):
         self.instructionsGlobal.append(instruction)
         # self.appendInstruction(instruction)
@@ -29,6 +44,9 @@ class CodeGenerationVisitor(ASTVisitor):
     def appendBlockInstructionsToParent(parentInstructions, blockInstructions): # not used
         for instruction in blockInstructions:
             appendInstruction(instruction)
+
+    
+    # visit_nodes - implement the ASTVisitor interface
 
     def visit_integer_node(self, int_node):
         self.node_count += 1
