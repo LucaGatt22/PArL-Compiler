@@ -485,17 +485,25 @@ class CodeGenerationVisitor(ASTVisitor):
         return [f'\n.{name}'] + paramsInstructions + blockInstructions + ['cframe']
 
 
-def driverCode():
+def driverCode(file_content=None):
+    if file_content == None:
+##        file_content = "x=23;"
+##        file_content = "let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);"
+##        file_content = "x = hello();"
+##    
+##        file_content = "x=   23 ; y=  100;"
+        file_content = "{ let z:int = 23 ; let xy:int; xy=3; }"
+##        file_content = "x= hello() as 45 __write_box __print not -> nota-b a_b - <= > != <= > != a b"
+        
     # parser driver code
-    #parser = Parser("x=23;")
-    # parser = Parser("let x=   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
-##    parser = Parser("x = hello();")
-##    parser.test = True # test
-##    parser = Parser("x=   23 ; y=  100;")
-    parser = Parser('{ let z:int = 23 ; let xy:int; xy=3; }')
+
+    ##    parser.test = True # test
+    parser = Parser(file_content)
     parser.Parse()
 
-    
+    # print nodes visitor
+    print_visitor = PrintNodesVisitor()
+    parser.ASTroot.accept(print_visitor)
 
     # semantic analysis (visitor)
     semantic_visitor = SemanticAnalysisVisitor()
@@ -504,10 +512,6 @@ def driverCode():
     # code generation (visitor)
     codeGenerationVisitor = CodeGenerationVisitor()
     parser.ASTroot.accept(codeGenerationVisitor)
-
-    # print nodes visitor
-    print_visitor = PrintNodesVisitor()
-    parser.ASTroot.accept(print_visitor)
-
+    
 if __name__ == '__main__':
     driverCode()

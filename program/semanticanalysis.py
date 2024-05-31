@@ -233,7 +233,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_variabledeclsuffix_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"VariableDeclSuffix node => ")
+        print('\t' * self.tab_count, "VariableDeclSuffix node => ")
         self.inc_tab_count()
         try: # https://www.w3schools.com/python/python_try_except.asp
             variableDeclArrayType = node.variableDeclArray.accept(self) # return value probably not worked
@@ -247,7 +247,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_variabledeclarray_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"VariableDeclArray node => ")
+        print('\t' * self.tab_count, "VariableDeclArray node => ")
         self.inc_tab_count()
         try:
             node.integerLiteral.accept(self)
@@ -268,7 +268,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_writestatement_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"WriteStatement node => ")
+        print('\t' * self.tab_count, "WriteStatement node => ")
         self.inc_tab_count()
         for expr in node.exprs:
             node.expr.accept(self)
@@ -280,7 +280,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_ifstatement_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"IfStatement node => ")
+        print('\t' * self.tab_count, "IfStatement node => ")
         self.inc_tab_count()
         exprType = node.expr.accept(self)
         node.blockIf.accept(self)
@@ -313,7 +313,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_formalparam_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"FormalParam node => ")
+        print('\t' * self.tab_count, "FormalParam node => ")
         self.inc_tab_count()
         name = node.identifier.accept(self)
         symbolType = node.typeLiteral.accept(self)
@@ -325,7 +325,7 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
     def visit_formalparams_node(self, node):
         self.node_count += 1
-        print('\t' * self.tab_count, str(nodeName)+"FormalParams node => ")
+        print('\t' * self.tab_count, "FormalParams node => ")
         self.inc_tab_count()
         formalParamsTypes = '<'
         for formalparam in node.formalparams:
@@ -354,13 +354,13 @@ class SemanticAnalysisVisitor(ASTVisitor):
 
 def driverCode():
     # parser driver code
-    #parser = Parser("x=23;")
+##    parser = Parser("x=23;")
 ##    parser = Parser("let x: int =   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
-    parser = Parser("fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
+##    parser = Parser("fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
 ##    parser = Parser("x = hello();")
 ##    parser.test = True # test
 ##    parser = Parser("x=   23 ; y=  100;")
-##    parser = Parser('{ let z:int = 23 ; let xy: int =3; }')
+    parser = Parser('{ let z:int = 23 ; let xy: int =3; }')
     parser.Parse()
 
     
@@ -375,5 +375,5 @@ def driverCode():
     print_visitor = PrintNodesVisitor()
     parser.ASTroot.accept(print_visitor)
 if __name__ == '__main__':
-    test = True
+    test = False
     driverCode()

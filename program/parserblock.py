@@ -250,13 +250,14 @@ class Parser:
         if term != None:
             simpleExprNode = ast.ASTSimpleExprNode( term )
             while True:
-                relOp = self.ParseAdditiveOp()
-                if relOp == None: return simpleExprNode # does this work? - continue from here
+                addOp = self.ParseAdditiveOp()
+                if addOp == None: return simpleExprNode # does this work? - continue from here
                 term = self.ParseTerm()
                 if term == None:
                     print('error while parsing term')
+                    exit()
                     return None
-                simpleExprNode.add_term(relOp, term)
+                simpleExprNode.add_term(addOp, term)
         
 
     def oldFuncParseExpression(self): # to remove
@@ -282,6 +283,7 @@ class Parser:
                 simpleExpr = self.ParseSimpleExpr()
                 if simpleExpr == None:
                     print('error ParseExpression')
+                    exit()
                     return None
                 exprNode.add_simpleexpr(relOp, simpleExpr)
             # check for 'as' keyword
@@ -292,6 +294,7 @@ class Parser:
                     return exprNode
                 else:
                     print("error while parsing expression")
+                    exit()
                     return None
             else: return exprNode
         
@@ -519,17 +522,19 @@ class Parser:
         self.ASTroot = self.ParseProgram()
 
 
-def driverCode():
+def driverCode(strInput):
     #parser = Parser("x=23;")
-    parser = Parser("let x: int =   23 ; __delay;")
-##    parser = Parser("let x =   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);")
-##    parser = Parser("x = hello();")
+    parser = Parser(strInput)
 ##    parser.test = True # test
-##    parser = Parser("x=   23 ; y=  100;")
-##    parser = Parser('{ z = 23 ; xy=3; }')
     parser.Parse()
 
     print_visitor = PrintNodesVisitor()
     parser.ASTroot.accept(print_visitor)
 if __name__ == '__main__':
-    driverCode()
+##    strInput = "x=23;"
+    strInput = "let x: int =   23 ; __delay;"
+##    strInput = "x=   23 ; y=  100;"
+##    strInput = "x = hello();"
+##    strInput = "let x =   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);"
+##    strInput = '{ z = 23 ; xy=3; }'
+    driverCode(strInput)

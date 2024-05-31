@@ -47,6 +47,8 @@ class TokenType(Enum):
     
     minusSign = 38
     arrow = 39
+
+    comma = 40
     
     # special tokens
     void = 99
@@ -379,11 +381,12 @@ def remove_comments(source_code):
     return source_code_no_comments
 
 debug = False
-def driverCode():
-##    strIn = "_ __ __h __wdth __write_box __print not nota-b a_b - <= > != <= > != a b"
-    # x= hello() as _ __ __h 45 234__wdth __write_box __print not -> nota-b a_b - <= > != <= > != a b
-    strIn = read_file_as_string("code.parl")
-    if strIn is None: exit() # user has been notified of error already
+def driverCode(strIn=None):
+    if strIn == None:
+##        strIn = "_ __ __h __wdth __write_box __print not nota-b a_b - <= > != <= > != a b"
+##        strIn= "hello() as _ __ __h 45 234__wdth __write_box __print not -> nota-b a_b - <= > != <= > != a b"
+        strIn= "x = hello() as 45 __write_box __print not -> nota-b a_b - <= > != <= > != a b"
+
     strIn = remove_comments(strIn)
     strIn = strIn.replace("\n", " ")
     
@@ -397,4 +400,8 @@ def driverCode():
         if t.lexeme == 'error': raise Exception('error in PaRL code')
 
 if __name__ == '__main__':
-    driverCode()
+##    strIn = read_file_as_string("code.parl")
+##    if strIn is None: exit() # user has been notified of error already
+##    driverCode(strIn)
+
+    driverCode() # use a code example in this code file

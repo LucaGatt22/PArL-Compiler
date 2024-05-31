@@ -78,8 +78,8 @@ if __name__ == "__main__":
     symbol_table = SymbolTable()
 
     # Insert symbols
-    symbol_table.insert("x", 'int', 10)
-    symbol_table.insert("y", 'int', 20)
+    symbol_table.insert("x", 'int')
+    symbol_table.insert("y", 'int')
 
     # Lookup symbols
     print("Value of 'x':", symbol_table.lookup("x"))  # Output: 10
