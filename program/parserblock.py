@@ -533,8 +533,10 @@ def driverCode(strInput):
 if __name__ == '__main__':
 ##    strInput = "x=23;"
     strInput = "let x: int =   23 ; __delay;"
+    strInput = "x[5] = 20; "
+##    strInput = "let x[]: int = [1,2,3];"
 ##    strInput = "x=   23 ; y=  100;"
-##    strInput = "x = hello();"
+    strInput = "x = hello();"
 ##    strInput = "let x =   23 ; y=  100; { z = 23 ;xy=3; } fun hello()->bool{return 2;} x=hello()+2*3/6-2*(8-4);"
-##    strInput = '{ z = 23 ; xy=3; }'
+    strInput = '{ z = 23 ; xy=3; }'
     driverCode(strInput)
